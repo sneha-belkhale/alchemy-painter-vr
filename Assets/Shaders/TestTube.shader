@@ -10,6 +10,7 @@
         _FillAmount ("Fill Amount", Range(-1, 1)) = 0
         _FillColor ("Fill Color", Color) = (1, 1, 1, 1)
         _FresnelColor ("Fresnel Color", Color) = (1, 1, 1, 1)
+        _FresnelPower ("Fresnel Power", Range(1, 10)) = 0
         _NoiseTex ("Glitter Noise", 2D) = "white" {}
         _MainTex ("Main Noise", 2D) = "white" {}
         _GlitterPercent ("Glitter Percent", Range(0, 1)) = 0
@@ -138,6 +139,7 @@
     #pragma surface surf SimpleFresnel fullforwardshadows vertex:vert alpha:blend
         
         fixed4 _FresnelColor;
+        float _FresnelPower;
         fixed4 _Color;
         struct Input {
             float2 uv_MainTex;
@@ -153,7 +155,7 @@
         
         half4 LightingSimpleFresnel (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {
             float vDot = dot(viewDir, s.Normal);
-            float fresnelIntensity = 1 * pow(saturate(1-vDot), 1.0);
+            float fresnelIntensity = _FresnelPower * pow(saturate(1-vDot), 1);
             float3 fresnelColor = fresnelIntensity * (0.6*_FresnelColor + 0.4*_Color);
 
             half4 c;

@@ -12,6 +12,7 @@ public class FluidFiller : MonoBehaviour
     private Material FluidMatTemp;
     private Material SyringeMat;
     private MeshPainterController MeshPainterController;
+    private Material lastHighlightedMat; 
 
     private float maxFill;
     private float minFill;
@@ -21,6 +22,7 @@ public class FluidFiller : MonoBehaviour
     {
         FluidMat = FluidToFill.GetComponent<Renderer>().material;
         FluidMatTemp = new Material(FluidMat);
+        lastHighlightedMat = FluidMat;
         SyringeMat = Syringe.GetComponent<Renderer>().material;
         SyringeMat.SetFloat("_FillAmount", -1f);
         SyringeMat.SetFloat("_GlitterPercent", 0);
@@ -33,106 +35,72 @@ public class FluidFiller : MonoBehaviour
         MeshPainterController = MeshPainter.GetComponent<MeshPainterController>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void HandlePlatformUpdate(Ray ray, bool fillEvent, bool emptyEvent)
     {
-        // ************** Keyboard Controls ************** //
+        int layerMask = 1 << 8 | 1 << 11;
+        RaycastHit hit;
 
-        if (Input.GetKey(KeyCode.F))
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
-            RaycastHit hit;
-            int layerMask = 1 << 8;
+            FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+            if (fillEvent && hit.collider.gameObject.layer != 11)
             {
-                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
                 FillTube(FluidMat);
+            }
+            else if (emptyEvent)
+            {
+                EmptyTube(FluidMat);
             }
             else
             {
-                EmptySyringe();
+                HighlightTube(FluidMat);
             }
         }
-
-        if (Input.GetKey(KeyCode.G))
+        else if (emptyEvent && MeshPainterController.lastHighlightedIndex.x > 0)
         {
-            RaycastHit hit;
-            int layerMask = 1 << 8;
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-            {
-                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
-                EmptyTube(FluidMat);
-            }
-
-            layerMask = 1 << 11;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-            {
-                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
-                EmptyTube(FluidMat);
-            }
-
-            if(MeshPainterController.lastHighlightedIndex.x > 0)
-            {
-                SetMaterialFromTriangle();
-                EmptyTube(FluidMatTemp);
-            }
+            SetMaterialFromTriangle();
+            EmptyTube(FluidMatTemp);
         }
-
-        // ************** VR Controls ************** //
-
-        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown))
+        else if (fillEvent)
         {
-            RaycastHit hit;
-            int layerMask = 1 << 8;
-
-            Ray ray = new Ray();
-            ray.origin = Syringe.transform.position;
-            ray.direction = -Syringe.transform.up;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-            {
-                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
-                EmptyTube(FluidMat);
-            }
-
-            layerMask = 1 << 11;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-            {
-                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
-                EmptyTube(FluidMat);
-            }
-
-            if (MeshPainterController.lastHighlightedIndex.x > 0)
-            {
-                SetMaterialFromTriangle();
-                EmptyTube(FluidMatTemp);
-            }
-        }
-
-        if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp))
-        {
-            RaycastHit hit;
-            int layerMask = 1 << 8;
-
-            Ray ray = new Ray();
-            ray.origin = Syringe.transform.position;
-            ray.direction = -Syringe.transform.up;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-            {
-                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
-                FillTube(FluidMat);
-            }
-            else
-            {
-                EmptySyringe();
-            }
+            EmptySyringe();
         }
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        RemoveHighlights();
+
+        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTrackedRemote);
+
+        // ************** Keyboard Controls ************** //
+        if (!isConnected)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            HandlePlatformUpdate(ray, Input.GetKey(KeyCode.F), Input.GetKey(KeyCode.G));
+        }
+        // ************** VR Controls ************** //
+
+        {
+            Ray ray = new Ray();
+            ray.origin = Syringe.transform.position;
+            ray.direction = -Syringe.transform.up;
+            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown), OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp));
+        }
+    }
+
+    void HighlightTube(Material mat)
+    {
+        mat.SetFloat("_FresnelPower", 2);
+        lastHighlightedMat = mat;
+    }
+
+    void RemoveHighlights()
+    {
+        lastHighlightedMat.SetFloat("_FresnelPower", 1);
+    }
     void SetPresserPos(float fillAmount)
     {
         Vector3 pos = Presser.transform.localPosition;

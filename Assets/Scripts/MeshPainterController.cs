@@ -30,7 +30,7 @@ public class MeshPainterController : MonoBehaviour
         syringeMat = syringe.GetComponent<Renderer>().material;
         GameObject[] paintableObjects = GameObject.FindGameObjectsWithTag("Paintable");
         InitPaintableObjects(paintableObjects);
-        lastHighlightedIndex = new Vector3Int();
+        lastHighlightedIndex = new Vector3Int(-1, -1, -1);
         lastHighlightedIndex2 = new Vector3Int();
         lastTrianglePaintStates = new List<TrianglePaintState>();
 
@@ -232,63 +232,57 @@ public class MeshPainterController : MonoBehaviour
         mesh.uv3 = uv3Array;
         mesh.tangents = tangentsArray;
     }
+    void HandlePlatformUpdate(Ray ray, bool colorEvent, bool colorEndEvent)
+    {
+        RaycastHit hit;
+        int layerMask = 1 << 9;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        {
+            Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().mesh;
+            if (colorEvent)
+            {
+                ColorTriangleWithSyringe(hit.triangleIndex, mesh);
+            }
+            else
+            {
+                HighlightTriangle(hit.triangleIndex, mesh);
+            }
+        }
+
+        if (colorEndEvent)
+        {
+            UpdateLastPaintedState();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.U))
+        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTrackedRemote);
+
+        if (Input.GetKeyDown(KeyCode.U) || OVRInput.GetDown(OVRInput.RawButton.B))
         {
             Undo();
         }
-        if (lastHighlightedMesh)
-        {
-            RemoveLastHighlight();
-        }
+        
+        RemoveLastHighlight();
+
         //check if you are raycasting against this mesh
         RaycastHit hit;
         int layerMask = 1 << 9;
 
         // ************** Keyboard Controls ************** //
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        if (!isConnected)
         {
-            Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().mesh;
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                ColorTriangleWithSyringe(hit.triangleIndex, mesh);
-            }
-            else
-            {
-                HighlightTriangle(hit.triangleIndex, mesh);
-            }
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            HandlePlatformUpdate(ray, Input.GetKey(KeyCode.LeftShift), Input.GetKeyUp(KeyCode.LeftShift));
         }
-
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            UpdateLastPaintedState();
-        }
-
         // ************** VR Controls ************** //
-
-        ray.origin = syringe.transform.position;
-        ray.direction = -syringe.transform.up;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        else
         {
-            Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().mesh;
-
-            if (OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger))
-            {
-                ColorTriangleWithSyringe(hit.triangleIndex, mesh);
-            }
-            else
-            {
-                HighlightTriangle(hit.triangleIndex, mesh);
-            }
-        }
-
-        if (OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger))
-        {
-            UpdateLastPaintedState();
+            Ray ray = new Ray(syringe.transform.position, -syringe.transform.up);
+            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger), OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger));
         }
     }
 }

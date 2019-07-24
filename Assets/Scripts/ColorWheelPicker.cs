@@ -25,15 +25,11 @@ public class ColorWheelPicker : MonoBehaviour
         isHovering = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    void HandlePlatformUpdate(Ray ray, bool selectColorEvent)
     {
         RaycastHit hit;
         int layerMask = 1 << 10;
 
-        // ************** Keyboard Controls ************** //
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
             //hit the color wheel 
@@ -43,43 +39,33 @@ public class ColorWheelPicker : MonoBehaviour
             colorSourceTubeMat.SetColor("_Color", color);
             rainbowSourceTubeMat.SetColor("_Color", color);
 
-            if (Input.GetKey(KeyCode.RightShift))
-            {
-                lastColorSelected = color;
-            }
-        }
-        else if(isHovering)
-        {
-            //restore to default state
-            colorSourceTubeMat.SetColor("_Color", lastColorSelected);
-            rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
-            isHovering = false;
-        }
-
-        // ************** VR Controls ************** //
-
-        ray.origin = syringe.transform.position;
-        ray.direction = -syringe.transform.up;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-        {
-            //hit the color wheel 
-            isHovering = true;
-            Vector2 texCoord = hit.textureCoord;
-            Color color = colorWheelTex.GetPixelBilinear(texCoord.x, texCoord.y);
-            colorSourceTubeMat.SetColor("_Color", color);
-            rainbowSourceTubeMat.SetColor("_Color", color);
-
-            if (OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger))
+            if (selectColorEvent)
             {
                 lastColorSelected = color;
             }
         }
         else if (isHovering)
         {
-            //restore to default state
             colorSourceTubeMat.SetColor("_Color", lastColorSelected);
             rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
             isHovering = false;
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTrackedRemote);
+
+        if (!isConnected)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            HandlePlatformUpdate(ray, Input.GetKey(KeyCode.RightShift));
+        }
+        else
+        {
+            Ray ray = new Ray(syringe.transform.position, -syringe.transform.up);
+            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger));
         }
     }
 }
