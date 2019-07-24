@@ -451,6 +451,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Syringe: {fileID: 1912431745}
   Presser: {fileID: 1279808755}
+  MeshPainter: {fileID: 1928616564}
   FluidToFill: {fileID: 767999390685633039}
 --- !u!4 &359471134
 Transform:
@@ -1272,7 +1273,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 751029502}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9cb820cc438fc47eb9aea17f42819880, type: 3}
   m_Name: 
@@ -2206,6 +2207,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syringe: {fileID: 1912431745}
+  lastHighlightedIndex: {x: 0, y: 0, z: 0}
+  lastHighlightedMesh: {fileID: 0}
 --- !u!4 &1928616566
 Transform:
   m_ObjectHideFlags: 0

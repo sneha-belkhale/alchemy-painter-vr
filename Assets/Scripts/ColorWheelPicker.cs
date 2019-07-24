@@ -30,6 +30,9 @@ public class ColorWheelPicker : MonoBehaviour
     {
         RaycastHit hit;
         int layerMask = 1 << 10;
+
+        // ************** Keyboard Controls ************** //
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
@@ -47,11 +50,13 @@ public class ColorWheelPicker : MonoBehaviour
         }
         else if(isHovering)
         {
+            //restore to default state
             colorSourceTubeMat.SetColor("_Color", lastColorSelected);
             rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
             isHovering = false;
         }
 
+        // ************** VR Controls ************** //
 
         ray.origin = syringe.transform.position;
         ray.direction = -syringe.transform.up;
@@ -71,10 +76,10 @@ public class ColorWheelPicker : MonoBehaviour
         }
         else if (isHovering)
         {
+            //restore to default state
             colorSourceTubeMat.SetColor("_Color", lastColorSelected);
             rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
             isHovering = false;
         }
-
     }
 }

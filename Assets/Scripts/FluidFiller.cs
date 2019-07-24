@@ -5,9 +5,13 @@ public class FluidFiller : MonoBehaviour
 {
     public GameObject Syringe;
     public GameObject Presser;
+    public GameObject MeshPainter;
+
     public GameObject FluidToFill;
     private Material FluidMat;
+    private Material FluidMatTemp;
     private Material SyringeMat;
+    private MeshPainterController MeshPainterController;
 
     private float maxFill;
     private float minFill;
@@ -16,6 +20,7 @@ public class FluidFiller : MonoBehaviour
     void Start()
     {
         FluidMat = FluidToFill.GetComponent<Renderer>().material;
+        FluidMatTemp = new Material(FluidMat);
         SyringeMat = Syringe.GetComponent<Renderer>().material;
         SyringeMat.SetFloat("_FillAmount", -1f);
         SyringeMat.SetFloat("_GlitterPercent", 0);
@@ -24,6 +29,8 @@ public class FluidFiller : MonoBehaviour
         SyringeMat.SetFloat("_RainbowPercent", 0);
         maxFill = 0.5f;
         minFill = -1f;
+
+        MeshPainterController = MeshPainter.GetComponent<MeshPainterController>();
     }
 
     // Update is called once per frame
@@ -67,6 +74,12 @@ public class FluidFiller : MonoBehaviour
                 FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
                 EmptyTube(FluidMat);
             }
+
+            if(MeshPainterController.lastHighlightedIndex.x > 0)
+            {
+                SetMaterialFromTriangle();
+                EmptyTube(FluidMatTemp);
+            }
         }
 
         // ************** VR Controls ************** //
@@ -91,6 +104,12 @@ public class FluidFiller : MonoBehaviour
             {
                 FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
                 EmptyTube(FluidMat);
+            }
+
+            if (MeshPainterController.lastHighlightedIndex.x > 0)
+            {
+                SetMaterialFromTriangle();
+                EmptyTube(FluidMatTemp);
             }
         }
 
@@ -132,6 +151,27 @@ public class FluidFiller : MonoBehaviour
 
             SetPresserPos(sFillAmount);
         }
+    }
+
+    void SetMaterialFromTriangle()
+    {
+        Mesh mesh = MeshPainterController.lastHighlightedMesh;
+        int tIdx = MeshPainterController.lastHighlightedIndex.x;
+
+        float _ColorPercent = mesh.tangents[tIdx].x;
+        float _GlitterPercent = mesh.tangents[tIdx].y;
+        float _PoisonPercent = mesh.tangents[tIdx].z;
+        float _RainbowPercent = mesh.tangents[tIdx].w;
+
+        Color color = new Color(mesh.uv2[tIdx].x, mesh.uv2[tIdx].y, mesh.uv3[tIdx].x);
+
+        FluidMatTemp.SetColor("_Color", color);
+        FluidMatTemp.SetFloat("_GlitterPercent", _GlitterPercent);
+        FluidMatTemp.SetFloat("_ColorPercent", _ColorPercent);
+        FluidMatTemp.SetFloat("_PoisonPercent", _PoisonPercent);
+        FluidMatTemp.SetFloat("_RainbowPercent", _RainbowPercent);
+        FluidMatTemp.SetFloat("_FillAmount", maxFill);
+
     }
 
     void RecalculateWeights(Material fromMat, Material toMat, float blend)
@@ -183,9 +223,7 @@ public class FluidFiller : MonoBehaviour
             tubeMat.SetColor("_Color", color);
 
             RecalculateWeights(SyringeMat, tubeMat, blend);
-
             SetPresserPos(sFillAmount);
-
         }
     }
 

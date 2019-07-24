@@ -16,9 +16,9 @@ public class MeshPainterController : MonoBehaviour
     public GameObject syringe;
     private Material syringeMat;
 
-    private Vector3Int lastHighlightedIndex;
+    public Vector3Int lastHighlightedIndex;
     private Vector3Int lastHighlightedIndex2;
-    private Mesh lastHighlightedMesh;
+    public Mesh lastHighlightedMesh;
 
 
     private List<List<TrianglePaintState>> lastPaintedList; 
@@ -89,6 +89,7 @@ public class MeshPainterController : MonoBehaviour
 
     void RemoveLastHighlight()
     {
+        if (lastHighlightedIndex.x < 0) return;
         Vector2[] uv3Array = lastHighlightedMesh.uv3;
         uv3Array[lastHighlightedIndex.x].y = 0;
         uv3Array[lastHighlightedIndex.y].y = 0;
@@ -97,6 +98,7 @@ public class MeshPainterController : MonoBehaviour
         //uv3Array[lastHighlightedIndex2.y].y = 0;
         //uv3Array[lastHighlightedIndex2.z].y = 0;
         lastHighlightedMesh.uv3 = uv3Array;
+        lastHighlightedIndex.Set(-1, -1, -1);
     }
 
     void UpdateLastPaintedState()
@@ -147,6 +149,8 @@ public class MeshPainterController : MonoBehaviour
 
     void HighlightTriangle(int tIdx, Mesh mesh)
     {
+        if (tIdx * 3 == lastHighlightedIndex.x) return;
+
         //int idx;
         //if (hit.triangleIndex % 2 == 0) // quads?
         //{
@@ -157,6 +161,9 @@ public class MeshPainterController : MonoBehaviour
         //    idx = hit.triangleIndex - 1;
         //}
         int idx = tIdx;
+
+        //check if already highlighted 
+
         Vector2[] uv3Array = mesh.uv3;
         int[] triangles = mesh.triangles;
 
@@ -188,16 +195,18 @@ public class MeshPainterController : MonoBehaviour
         Vector2 curColorCompressed1 = new Vector2(curColor.r, curColor.g);
         Vector2 curColorCompressed2 = new Vector2(curColor.b, 0);
         //Vector2 curColorCompressed = new Vector2(Mathf.Floor(255 * curColor.r), 255 * Mathf.Floor(255 * curColor.g) + Mathf.Floor(255 * curColor.b));
+
+
+        //save last triangle paint state if different 
+        if (currentSyringeComponents == mesh.tangents[mesh.triangles[tIdx * 3 + 0]] && mesh.uv2[mesh.triangles[tIdx * 3 + 0]] == curColorCompressed1)
+        {
+            return;
+        }
+
         int[] triangles = mesh.triangles;
         Vector4[] tangentsArray = mesh.tangents;
         Vector2[] uv2Array = mesh.uv2;
         Vector2[] uv3Array = mesh.uv3;
-
-        //save last triangle paint state if different 
-        if (currentSyringeComponents == tangentsArray[triangles[tIdx * 3 + 0]] && uv2Array[triangles[tIdx * 3 + 0]] == curColorCompressed1)
-        {
-            return;
-        }
 
         TrianglePaintState trianglePaintState;
         trianglePaintState.tangent = tangentsArray[triangles[tIdx * 3 + 0]];
