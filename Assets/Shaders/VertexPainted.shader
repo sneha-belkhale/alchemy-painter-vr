@@ -110,12 +110,14 @@
             float2 uvm = float2(_PoisonPercent*2.0*_UvScale*IN.uv_MainTex.xy-1.0);
             
             float f = fbm(uvm+fbm(5*uvm + 0.2*_Time.y, _octaves), _octaves);
-            float3 poisonColor = lerp(_color4, _color3, 2*f);
-            
-
+            float3 poisonColor = lerp(2*color, _color3, 2*f);
             
             o.Albedo = _ColorPercent * color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor + _PoisonPercent * poisonColor;
             o.Alpha = 0.1 * glitterAlpha;
+            
+            if(IN.uv3_MainTex3.y > 0) {
+                o.Albedo = float3(1,1,1);
+            }
         }
         
         

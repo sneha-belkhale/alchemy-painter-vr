@@ -47,6 +47,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MainTex3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -92,5 +96,5 @@ Material:
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _color1: {r: 0, g: 0, b: 0, a: 1}
     - _color2: {r: 1, g: 0, b: 0, a: 1}
-    - _color3: {r: 0.9386792, g: 0.93902963, b: 1, a: 1}
-    - _color4: {r: 0.12829295, g: 0.27425787, b: 0.29245278, a: 1}
+    - _color3: {r: 1, g: 1, b: 1, a: 1}
+    - _color4: {r: 0, g: 0, b: 0, a: 1}

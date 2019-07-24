@@ -29,6 +29,8 @@ public class FluidFiller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // ************** Keyboard Controls ************** //
+
         if (Input.GetKey(KeyCode.F))
         {
             RaycastHit hit;
@@ -67,6 +69,8 @@ public class FluidFiller : MonoBehaviour
             }
         }
 
+        // ************** VR Controls ************** //
+
         if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown))
         {
             RaycastHit hit;
@@ -75,6 +79,14 @@ public class FluidFiller : MonoBehaviour
             Ray ray = new Ray();
             ray.origin = Syringe.transform.position;
             ray.direction = -Syringe.transform.up;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+            {
+                FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
+                EmptyTube(FluidMat);
+            }
+
+            layerMask = 1 << 11;
+
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
             {
                 FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
@@ -94,6 +106,10 @@ public class FluidFiller : MonoBehaviour
             {
                 FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
                 FillTube(FluidMat);
+            }
+            else
+            {
+                EmptySyringe();
             }
         }
     }

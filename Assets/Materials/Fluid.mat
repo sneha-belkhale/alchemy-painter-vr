@@ -94,12 +94,12 @@ Material:
     m_Colors:
     - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
     - _BlinkColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.380429, g: 0.5693999, b: 0.7830189, a: 1}
+    - _Color: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FillColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _color1: {r: 0, g: 0, b: 0, a: 1}
     - _color2: {r: 1, g: 0, b: 0, a: 1}
-    - _color3: {r: 0.9386792, g: 0.93902963, b: 1, a: 1}
-    - _color4: {r: 0.12829298, g: 0.2742579, b: 0.2924528, a: 1}
+    - _color3: {r: 1, g: 1, b: 1, a: 1}
+    - _color4: {r: 0, g: 0, b: 0, a: 1}

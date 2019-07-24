@@ -11,6 +11,8 @@ public class ColorWheelPicker : MonoBehaviour
     public GameObject rainbowSourceTube;
     private Material rainbowSourceTubeMat;
 
+    public GameObject syringe;
+
 
     private Color lastColorSelected;
     private bool isHovering;
@@ -44,6 +46,30 @@ public class ColorWheelPicker : MonoBehaviour
             }
         }
         else if(isHovering)
+        {
+            colorSourceTubeMat.SetColor("_Color", lastColorSelected);
+            rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
+            isHovering = false;
+        }
+
+
+        ray.origin = syringe.transform.position;
+        ray.direction = -syringe.transform.up;
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        {
+            //hit the color wheel 
+            isHovering = true;
+            Vector2 texCoord = hit.textureCoord;
+            Color color = colorWheelTex.GetPixelBilinear(texCoord.x, texCoord.y);
+            colorSourceTubeMat.SetColor("_Color", color);
+            rainbowSourceTubeMat.SetColor("_Color", color);
+
+            if (OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger))
+            {
+                lastColorSelected = color;
+            }
+        }
+        else if (isHovering)
         {
             colorSourceTubeMat.SetColor("_Color", lastColorSelected);
             rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);

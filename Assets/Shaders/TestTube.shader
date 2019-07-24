@@ -92,19 +92,18 @@
         //Rainbow Effect
         float4 rainbowColor = _Color + 0.5 * fixed4(0.5*(sin(2*3.14*IN.uv_MainTex.y + _Time.y)),0.5*(sin(2*3.14*IN.uv_MainTex.x +  _Time.y)),1,1);
         //float4 rainbowColor = 0.5 * fixed4(0.5*(1+sin(2*3.14*IN.uv_MainTex.y + _Time.y)),0.5*(1+sin(2*3.14*IN.uv_MainTex.x +  _Time.y)),1,1);
-        float2 uvr = float2(2.0*IN.uv_MainTex.xy-1.0);
+        float2 uvr = float2(3.0*IN.uv_MainTex.xy-1.0);
         rainbowColor = _Color;
         rainbowColor.r += 2*sin(_Time.y)*(fbm(uvr+0.1*_Time.y, 1))*_Color.r;
         rainbowColor.g += 2*cos(_Time.y)*(fbm(uvr-0.1*_Time.y, 1))*_Color.g;
         rainbowColor.b += 2*sin(_Time.y + 1)*(fbm(uvr-0.1*_Time.y + 100, 1))*_Color.b;
-        
        
         //Ridge Affect 
         float2 uvm = float2(_PoisonPercent*2.0*IN.uv_MainTex.xy-1.0);
         
         float f = fbm(uvm+fbm(5*uvm + 0.2*_Time.y, _octaves), _octaves);
-        float3 poisonColor = lerp(_color4, _color3, 2*f);
-        
+        float3 poisonColor = lerp(2*_Color, _color3, 2*f);
+
         o.Albedo = _ColorPercent * _Color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor + _PoisonPercent * poisonColor;
         o.Alpha = 6 * IN.empty * (glitterAlpha);
     }
