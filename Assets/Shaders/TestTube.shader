@@ -103,10 +103,11 @@
         float2 uvm = float2(_PoisonPercent*2.0*IN.uv_MainTex.xy-1.0);
         
         float f = fbm(uvm+fbm(5*uvm + 0.2*_Time.y, _octaves), _octaves);
-        float3 poisonColor = lerp(2*_Color, _color3, 2*f);
-
-        o.Albedo = _ColorPercent * _Color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor + _PoisonPercent * poisonColor;
-        o.Alpha = 6 * IN.empty * (glitterAlpha);
+        float3 poisonColor = lerp(2*_Color, _color4, 2*f);
+        float colorTotal = _RainbowPercent + _ColorPercent + 0.0001;
+        o.Albedo = (_ColorPercent / colorTotal) * _Color + _GlitterPercent * glitterColor + (_RainbowPercent / colorTotal) * _RainbowPercent * rainbowColor + _PoisonPercent * poisonColor;
+        
+        o.Alpha = 6 * IN.empty;
     }
     
     half4 LightingToon (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {

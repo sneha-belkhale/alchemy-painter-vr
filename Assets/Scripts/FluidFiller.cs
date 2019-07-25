@@ -187,7 +187,10 @@ public class FluidFiller : MonoBehaviour
             tubeMat.SetFloat("_FillAmount", fillAmount);
             SyringeMat.SetFloat("_FillAmount", sFillAmount);
 
-            color = (1f - blendP) * sColor + blendP * color;
+            if(sColor.a > 0)
+            {
+                color = (1f - blendP) * sColor + blendP * color;
+            }
             tubeMat.SetColor("_Color", color);
 
             RecalculateWeights(SyringeMat, tubeMat, blend);
@@ -213,7 +216,11 @@ public class FluidFiller : MonoBehaviour
             tubeMat.SetFloat("_FillAmount", fillAmount);
             SyringeMat.SetFloat("_FillAmount", sFillAmount);
 
-            sColor = (1f - blendP) * color + blendP * sColor;
+            if (color.a > 0)
+            {
+                sColor = (1f - blendP) * color + blendP * sColor;
+            }
+
             SyringeMat.SetColor("_Color", sColor);
 
             RecalculateWeights(tubeMat, SyringeMat, blend);
