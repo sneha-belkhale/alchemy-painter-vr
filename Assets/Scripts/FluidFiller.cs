@@ -37,6 +37,7 @@ public class FluidFiller : MonoBehaviour
 
     void HandlePlatformUpdate(Ray ray, bool fillEvent, bool emptyEvent)
     {
+
         int layerMask = 1 << 8 | 1 << 11;
         RaycastHit hit;
 
@@ -82,8 +83,7 @@ public class FluidFiller : MonoBehaviour
             HandlePlatformUpdate(ray, Input.GetKey(KeyCode.F), Input.GetKey(KeyCode.G));
         }
         // ************** VR Controls ************** //
-
-        {
+        else {
             Ray ray = new Ray();
             ray.origin = Syringe.transform.position;
             ray.direction = -Syringe.transform.up;
