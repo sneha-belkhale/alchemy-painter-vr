@@ -55,7 +55,7 @@ public class ColorWheelPicker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTrackedRemote);
+        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
 
         if (!isConnected)
         {

@@ -73,7 +73,7 @@ public class FluidFiller : MonoBehaviour
     {
         RemoveHighlights();
 
-        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTrackedRemote);
+        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
 
         // ************** Keyboard Controls ************** //
         if (!isConnected)

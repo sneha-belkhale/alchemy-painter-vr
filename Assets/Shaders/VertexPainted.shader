@@ -122,20 +122,22 @@
         
         
         half4 LightingToon (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {
-            half NdotL = dot (s.Normal, gi.light.dir);
-            float lightIntensity = smoothstep(0, 0.05, NdotL);
-            float3 lightColor = lightIntensity * gi.light.color;
+            // ?? lighting ??
+            //half NdotL = dot (s.Normal, gi.light.dir);
+            //float lightIntensity = smoothstep(0, 0.05, NdotL);
+            //float3 lightColor = lightIntensity * gi.light.color;
             
-            float4 rimDot = 1 - dot(viewDir, s.Normal);
-            float rimIntensity = rimDot * _RimAmount * pow( NdotL, 3.0);
+            //float4 rimDot = 1 - dot(viewDir, s.Normal);
+            //float rimIntensity = rimDot * _RimAmount * pow( NdotL, 3.0);
 
-            rimIntensity = smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, rimIntensity);
-            float4 rim = rimIntensity * _RimColor;
-
+            //rimIntensity = smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, rimIntensity);
+            //float4 rim = rimIntensity * _RimColor;
+            
             half4 c;
-            c.rgb = s.Albedo * (lightColor + (1-lightIntensity)*_AmbientLightColor + rim.rgb);
-            c.a = s.Alpha;
+            //c.rgb = s.Albedo * (lightColor + (1-lightIntensity)*_AmbientLightColor + rim.rgb);
             c.rgb = s.Albedo;
+            c.a = s.Alpha;
+            
             return c;
         }
         

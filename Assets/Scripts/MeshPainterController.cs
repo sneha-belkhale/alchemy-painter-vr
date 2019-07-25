@@ -191,7 +191,7 @@ public class MeshPainterController : MonoBehaviour
         syringeMat.GetFloat("_PoisonPercent"),
         syringeMat.GetFloat("_RainbowPercent"));
 
-        Color curColor = syringeMat.GetColor("_Color");
+        Color curColor = syringeMat.GetColor("_Color").linear;
         Vector2 curColorCompressed1 = new Vector2(curColor.r, curColor.g);
         Vector2 curColorCompressed2 = new Vector2(curColor.b, 0);
         //Vector2 curColorCompressed = new Vector2(Mathf.Floor(255 * curColor.r), 255 * Mathf.Floor(255 * curColor.g) + Mathf.Floor(255 * curColor.b));
@@ -259,7 +259,7 @@ public class MeshPainterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTrackedRemote);
+        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
 
         if (Input.GetKeyDown(KeyCode.U) || OVRInput.GetDown(OVRInput.RawButton.B))
         {
