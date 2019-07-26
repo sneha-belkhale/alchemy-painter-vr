@@ -143,7 +143,6 @@ public class FluidFiller : MonoBehaviour
         FluidMatTemp.SetFloat("_PoisonPercent", _PoisonPercent);
         FluidMatTemp.SetFloat("_RainbowPercent", _RainbowPercent);
         FluidMatTemp.SetFloat("_FillAmount", maxFill);
-
     }
 
     void RecalculateWeights(Material fromMat, Material toMat, float blend)
@@ -163,6 +162,7 @@ public class FluidFiller : MonoBehaviour
 
         float glitterPctNext = (glitterPct * blend + (sGlitterPct * Time.deltaTime)) / (blend + Time.deltaTime);
         float colorPctNext = (colorPct * blend + (sColorPct * Time.deltaTime)) / (blend + Time.deltaTime);
+        Debug.Log(colorPctNext);
         float poisonPctNext = (poisonPct * blend + (sPoisonPct * Time.deltaTime)) / (blend + Time.deltaTime);
         float rainbowPctNext = (rainbowPct * blend + (sRainbowPct * Time.deltaTime)) / (blend + Time.deltaTime);
         toMat.SetFloat("_GlitterPercent", glitterPctNext);
@@ -180,8 +180,6 @@ public class FluidFiller : MonoBehaviour
 
         Color sColor = SyringeMat.GetColor("_Color");
         Color color = tubeMat.GetColor("_Color");
-        Debug.Log(sFillAmount);
-        Debug.Log(fillAmount);
 
         if (sFillAmount > minFill && fillAmount < scaleMaxFill)
         {

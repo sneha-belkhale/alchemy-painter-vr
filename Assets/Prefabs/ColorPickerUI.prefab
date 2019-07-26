@@ -23,7 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1473528200898869926}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -408,6 +408,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tube
       objectReference: {fileID: 0}
+    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
+        type: 3}
+      propertyPath: fluidType
+      value: _ColorPercent
+      objectReference: {fileID: 0}
     - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -462,21 +467,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.07132447
-      objectReference: {fileID: 0}
-    - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.07132447
-      objectReference: {fileID: 0}
-    - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.07132447
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6901b6e4234d4d26803a397f6079bac, type: 3}
@@ -769,11 +759,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SourceTube
-      objectReference: {fileID: 0}
-    - target: {fileID: 8833584837848278279, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: m_Layer
-      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}

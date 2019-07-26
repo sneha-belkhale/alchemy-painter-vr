@@ -19,7 +19,6 @@ public class SourceTubeFiller : MonoBehaviour
         fluidMat.SetFloat("_PoisonPercent", 0);
         fluidMat.SetFloat("_ColorPercent", 0);
         fluidMat.SetFloat("_RainbowPercent", 0);
-        fluidMat.SetColor("_Color", new Color(0,0,0,0));
 
         fluidMat.SetFloat(fluidType, 1);
         lastFillTime = Time.fixedTime;
@@ -27,6 +26,10 @@ public class SourceTubeFiller : MonoBehaviour
 
         float scale = 1f / fluidMat.GetFloat("_Size");
         maxFill = scale * (0.5f + 1f) - 1f;
+
+        if(fluidType == "_GlitterPercent" || fluidType == "_PoisonPercent"){
+            fluidMat.SetColor("_Color", new Color(0, 0, 0, 0));
+        }
     }
 
     IEnumerator FillTube()
