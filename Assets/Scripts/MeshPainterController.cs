@@ -20,6 +20,7 @@ public class MeshPainterController : MonoBehaviour
     private Vector3Int lastHighlightedIndex2;
     public Mesh lastHighlightedMesh;
 
+    private float maxRaycastDist;
 
     private List<List<TrianglePaintState>> lastPaintedList; 
     private List<TrianglePaintState> lastTrianglePaintStates;
@@ -35,6 +36,8 @@ public class MeshPainterController : MonoBehaviour
         lastTrianglePaintStates = new List<TrianglePaintState>();
 
         lastPaintedList = new List<List<TrianglePaintState>>();
+
+        maxRaycastDist = 0.3f;
     }
 
     void InitPaintableObjects( GameObject[] paintableObjects)
@@ -238,7 +241,7 @@ public class MeshPainterController : MonoBehaviour
         RaycastHit hit;
         int layerMask = 1 << 9;
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(ray, out hit, maxRaycastDist, layerMask))
         {
             Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().mesh;
             if (colorEvent)

@@ -133,7 +133,7 @@ public class FluidFiller : MonoBehaviour
 
         Color color = new Color(mesh.uv2[tIdx].x, mesh.uv2[tIdx].y, mesh.uv3[tIdx].x);
 
-        FluidMatTemp.SetColor("_Color", color);
+        FluidMatTemp.SetColor("_Color", color.gamma);
         FluidMatTemp.SetFloat("_GlitterPercent", _GlitterPercent);
         FluidMatTemp.SetFloat("_ColorPercent", _ColorPercent);
         FluidMatTemp.SetFloat("_PoisonPercent", _PoisonPercent);

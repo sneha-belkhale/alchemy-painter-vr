@@ -118,19 +118,20 @@
             float2 uvm = float2(_PoisonPercent*2.0*_UvScale*IN.uv_MainTex.xy-1.0);
             
             float f = fbm(uvm+fbm(5*uvm + 0.2*_Time.y, _octaves), _octaves);
-            float3 poisonColor = lerp(2*color, _color3, 2*f);
             
             float colorTotal = _RainbowPercent + _ColorPercent + 0.0001;
 
             o.Albedo = (_ColorPercent/colorTotal) * color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor / (colorTotal * colorTotal);
             o.Albedo = hardLight(0.5 + _PoisonPercent * (2*f - 0.5), o.Albedo);
             o.Alpha = 1;
-
-            if(IN.uv3_MainTex3.y > 0) {
-                o.Albedo = float3(1,1,1);
-            }
+            
+            // default depth shade 
             if(length(IN.tangent) < 0.001){
                 o.Albedo = (1/exp(min(IN.depth,10) * _FogDensity)) * float3(1,1,1) + _AmbientLightColor;
+            }
+            // highlighting 
+            if(IN.uv3_MainTex3.y > 0) {
+                o.Albedo = _color3;
             }
         }
         
