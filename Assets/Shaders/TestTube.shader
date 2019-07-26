@@ -18,6 +18,7 @@
         _PoisonPercent ("Poison Percent", Range(0, 1)) = 0
         _RainbowPercent ("Rainbow Percent", Range(0, 1)) = 0
         _octaves ("Octaves", Int) = 4
+        _Size ("Size", Range(0,1)) = 1
     }
     SubShader
     {
@@ -40,6 +41,7 @@
     float _ColorPercent;
     float _PoisonPercent;
     int _octaves;
+    float _Size;
     
     sampler2D _NoiseTex; 
     
@@ -54,13 +56,14 @@
         float height = _FillAmount;
         o.empty = 1;
         o.uv_MainTex = v.texcoord;
-        if ( v.vertex.y > height) {
+        if ( v.vertex.y > _Size * (height + 1) - 1) {
             float wave = 0;
             if ( _FillAmount > -1) {
                 wave = .1;
             }
             o.empty = wave;
             v.vertex.y = height + wave * ( 1 + cos(2*(v.vertex.x + 0.5 + 2*_Time.y))) + wave * ( 1 + sin(2*(v.vertex.z - 0.5f + 2*_Time.y)));
+            v.vertex.y = _Size * (v.vertex.y + 1) - 1;
             float sqrDistanceToCenter = v.vertex.x * v.vertex.x + v.vertex.z * v.vertex.z;
             v.vertex.y += wave * sqrDistanceToCenter;
         }

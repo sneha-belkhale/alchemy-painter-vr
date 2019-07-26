@@ -8,11 +8,13 @@ public class SourceTubeFiller : MonoBehaviour
     private Material fluidMat;
     private float lastFillTime;
     private float secondsUntilRefill;
+
+    private float maxFill; 
     // Start is called before the first frame update
     void Start()
     {
         fluidMat = GetComponent<Renderer>().material;
-        fluidMat.SetFloat("_FillAmount", 0.5f);
+        fluidMat.SetFloat("_FillAmount", 4f);
         fluidMat.SetFloat("_GlitterPercent", 0);
         fluidMat.SetFloat("_PoisonPercent", 0);
         fluidMat.SetFloat("_ColorPercent", 0);
@@ -22,12 +24,15 @@ public class SourceTubeFiller : MonoBehaviour
         fluidMat.SetFloat(fluidType, 1);
         lastFillTime = Time.fixedTime;
         secondsUntilRefill = 10f;
+
+        float scale = 1f / fluidMat.GetFloat("_Size");
+        maxFill = scale * (0.5f + 1f) - 1f;
     }
 
     IEnumerator FillTube()
     {
         float fillAmount = fluidMat.GetFloat("_FillAmount");
-        while(fillAmount < 0.5f)
+        while(fillAmount < maxFill)
         {
             fillAmount += 0.5f*Time.deltaTime;
             fluidMat.SetFloat("_FillAmount", fillAmount);

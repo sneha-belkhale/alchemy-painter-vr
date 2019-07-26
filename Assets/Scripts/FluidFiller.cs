@@ -12,8 +12,9 @@ public class FluidFiller : MonoBehaviour
     private Material FluidMatTemp;
     private Material SyringeMat;
     private MeshPainterController MeshPainterController;
-    private Material lastHighlightedMat; 
+    private Material lastHighlightedMat;
 
+    private float scaleMaxFill;
     private float maxFill;
     private float minFill;
 
@@ -31,6 +32,9 @@ public class FluidFiller : MonoBehaviour
         SyringeMat.SetFloat("_RainbowPercent", 0);
         maxFill = 0.5f;
         minFill = -1f;
+
+        float scale = 1 / FluidMat.GetFloat("_Size");
+        scaleMaxFill = scale * (maxFill + 1f) - 1f;
 
         MeshPainterController = MeshPainter.GetComponent<MeshPainterController>();
     }
@@ -176,8 +180,10 @@ public class FluidFiller : MonoBehaviour
 
         Color sColor = SyringeMat.GetColor("_Color");
         Color color = tubeMat.GetColor("_Color");
+        Debug.Log(sFillAmount);
+        Debug.Log(fillAmount);
 
-        if (sFillAmount > minFill && fillAmount < maxFill)
+        if (sFillAmount > minFill && fillAmount < scaleMaxFill)
         {
             float blend = (fillAmount - minFill) / (Mathf.Abs(minFill) + maxFill);
             float blendP = blend / (blend + Time.deltaTime);

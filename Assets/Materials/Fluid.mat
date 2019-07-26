@@ -66,6 +66,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _FillAmount: -1
+    - _FresnelPower: 0
     - _GlitterPercent: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -77,6 +78,7 @@ Material:
     - _PoisonPercent: 0
     - _RainbowPercent: 0
     - _RimAmount: 1.71
+    - _Size: 0.25
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
