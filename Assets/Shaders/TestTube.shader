@@ -18,9 +18,6 @@
         _PoisonPercent ("Poison Percent", Range(0, 1)) = 0
         _RainbowPercent ("Rainbow Percent", Range(0, 1)) = 0
         _octaves ("Octaves", Int) = 4
-        _color3 ("Color 3", Color) = (0,0,0,1)
-        _color4 ("Color 4", Color) = (1,0,1,1)
-
     }
     SubShader
     {
@@ -70,8 +67,6 @@
         o.vPos = v.vertex;
     }
         
-    float4 _color3,_color4;
-    
     float3 hardLight(float blend, float3 target) {
         return (blend > 0.5) * (1 - (1-target) * (1-2*(blend-0.5))) + (blend <= 0.5) * (target * (2*blend));
     }

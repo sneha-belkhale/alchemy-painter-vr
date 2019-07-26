@@ -17,8 +17,7 @@
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _octaves ("Octaves", Int) = 4
         _UvScale ("UV Scale", Range(1,20)) = 1
-        _color3 ("Color 3", Color) = (0,0,0,1)
-        _color4 ("Color 4", Color) = (1,0,1,1)
+        _HighlightColor ("Highlight Color", Color) = (0,0,0,1)
     }
     SubShader
     {
@@ -39,7 +38,7 @@
         fixed4 _RimColor;
         fixed4 _AmbientLightColor;
         float _FogDensity;
-
+        fixed4 _HighlightColor;
     
         sampler2D _MainTex;
         sampler2D _NoiseTex;
@@ -70,7 +69,6 @@
             o.tangent = v.tangent;
             o.depth = length(UnityObjectToViewPos(v.vertex).xyz);
         }
-        float4 _color3,_color4;
         int _octaves;
         
         float3 hardLight(float blend, float3 target) {
@@ -131,7 +129,7 @@
             }
             // highlighting 
             if(IN.uv3_MainTex3.y > 0) {
-                o.Albedo = _color3;
+                o.Albedo = _HighlightColor;
             }
         }
         

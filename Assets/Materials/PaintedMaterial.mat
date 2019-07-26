@@ -97,5 +97,5 @@ Material:
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _color1: {r: 0, g: 0, b: 0, a: 1}
     - _color2: {r: 1, g: 0, b: 0, a: 1}
-    - _color3: {r: 1, g: 1, b: 1, a: 1}
+    - _color3: {r: 0.9150943, g: 0.911167, b: 0.43596473, a: 1}
     - _color4: {r: 0, g: 0, b: 0, a: 1}

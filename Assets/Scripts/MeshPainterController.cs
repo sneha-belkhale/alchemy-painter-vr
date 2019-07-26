@@ -37,7 +37,7 @@ public class MeshPainterController : MonoBehaviour
 
         lastPaintedList = new List<List<TrianglePaintState>>();
 
-        maxRaycastDist = 0.3f;
+        maxRaycastDist = 0.1f;
     }
 
     void InitPaintableObjects( GameObject[] paintableObjects)
