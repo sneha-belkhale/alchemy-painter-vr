@@ -17,6 +17,7 @@ public class SourceTubeFiller : MonoBehaviour
         fluidMat.SetFloat("_PoisonPercent", 0);
         fluidMat.SetFloat("_ColorPercent", 0);
         fluidMat.SetFloat("_RainbowPercent", 0);
+        fluidMat.SetColor("_Color", new Color(0,0,0,0));
 
         fluidMat.SetFloat(fluidType, 1);
         lastFillTime = Time.fixedTime;

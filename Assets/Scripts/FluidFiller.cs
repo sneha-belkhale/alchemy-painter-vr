@@ -37,6 +37,7 @@ public class FluidFiller : MonoBehaviour
 
     void HandlePlatformUpdate(Ray ray, bool fillEvent, bool emptyEvent)
     {
+
         int layerMask = 1 << 8 | 1 << 11;
         RaycastHit hit;
 
@@ -82,8 +83,7 @@ public class FluidFiller : MonoBehaviour
             HandlePlatformUpdate(ray, Input.GetKey(KeyCode.F), Input.GetKey(KeyCode.G));
         }
         // ************** VR Controls ************** //
-
-        {
+        else {
             Ray ray = new Ray();
             ray.origin = Syringe.transform.position;
             ray.direction = -Syringe.transform.up;
@@ -187,7 +187,10 @@ public class FluidFiller : MonoBehaviour
             tubeMat.SetFloat("_FillAmount", fillAmount);
             SyringeMat.SetFloat("_FillAmount", sFillAmount);
 
-            color = (1f - blendP) * sColor + blendP * color;
+            if(sColor.a > 0)
+            {
+                color = (1f - blendP) * sColor + blendP * color;
+            }
             tubeMat.SetColor("_Color", color);
 
             RecalculateWeights(SyringeMat, tubeMat, blend);
@@ -213,7 +216,11 @@ public class FluidFiller : MonoBehaviour
             tubeMat.SetFloat("_FillAmount", fillAmount);
             SyringeMat.SetFloat("_FillAmount", sFillAmount);
 
-            sColor = (1f - blendP) * color + blendP * sColor;
+            if (color.a > 0)
+            {
+                sColor = (1f - blendP) * color + blendP * sColor;
+            }
+
             SyringeMat.SetColor("_Color", sColor);
 
             RecalculateWeights(tubeMat, SyringeMat, blend);

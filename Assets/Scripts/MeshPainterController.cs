@@ -49,8 +49,6 @@ public class MeshPainterController : MonoBehaviour
 
     void PrepareMesh(Mesh targetMesh)
     {
-        targetMesh.tangents = new Vector4[targetMesh.vertices.Length];
-
         int[] triangles = targetMesh.triangles;
         Vector3[] verts = targetMesh.vertices;
         Vector3[] normals = targetMesh.normals;
@@ -58,6 +56,7 @@ public class MeshPainterController : MonoBehaviour
 
         Vector3[] newVerts;
         Vector3[] newNormals;
+        Vector4[] newTangents;
         Vector2[] newUvs;
         Vector2[] newUv2s;
         Vector2[] newUv3s;
@@ -65,6 +64,7 @@ public class MeshPainterController : MonoBehaviour
         int n = triangles.Length;
         newVerts = new Vector3[n];
         newNormals = new Vector3[n];
+        newTangents = new Vector4[n];
         newUvs = new Vector2[n];
         newUv2s = new Vector2[n];
         newUv3s = new Vector2[n];
@@ -81,6 +81,7 @@ public class MeshPainterController : MonoBehaviour
         }
         targetMesh.vertices = newVerts;
         targetMesh.normals = newNormals;
+        targetMesh.tangents = newTangents;
         targetMesh.uv = newUvs;
         targetMesh.uv2 = newUv2s;
         targetMesh.uv3 = newUv3s;
