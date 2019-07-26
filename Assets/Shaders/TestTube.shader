@@ -71,7 +71,10 @@
     }
         
     float4 _color3,_color4;
-       
+    
+    float3 hardLight(float blend, float3 target) {
+        return (blend > 0.5) * (1 - (1-target) * (1-2*(blend-0.5))) + (blend <= 0.5) * (target * (2*blend));
+    }
     void surf (Input IN, inout SurfaceOutput o) {
         float2 uv = IN.uv_MainTex;
         float2 uv2 = uv;
@@ -103,10 +106,9 @@
         float2 uvm = float2(_PoisonPercent*2.0*IN.uv_MainTex.xy-1.0);
         
         float f = fbm(uvm+fbm(5*uvm + 0.2*_Time.y, _octaves), _octaves);
-        float3 poisonColor = lerp(2*_Color, _color4, 2*f);
         float colorTotal = _RainbowPercent + _ColorPercent + 0.0001;
-        o.Albedo = (_ColorPercent / colorTotal) * _Color + _GlitterPercent * glitterColor + (_RainbowPercent / colorTotal) * _RainbowPercent * rainbowColor + _PoisonPercent * poisonColor;
-        
+        o.Albedo = (_ColorPercent / colorTotal) * _Color + _GlitterPercent * glitterColor + (_RainbowPercent / colorTotal) * _RainbowPercent * rainbowColor;
+        o.Albedo = hardLight(0.5 + _PoisonPercent * (2*f - 0.5), o.Albedo);
         o.Alpha = 6 * IN.empty;
     }
     

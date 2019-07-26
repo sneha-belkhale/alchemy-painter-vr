@@ -8,6 +8,7 @@
         _RimAmount ("Rim Amount", Range(0, 2)) = 1.2
         _FillAmount ("Fill Amount", Range(-1, 1)) = 0
         _FillColor ("Fill Color", Color) = (1, 1, 1, 1)
+        _FogDensity ("Fog Density", Range(0, 1)) = 0
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _MainTex2 ("Albedo (RGB)", 2D) = "white" {}
         _MainTex3 ("Albedo (RGB)", 2D) = "white" {}
@@ -37,7 +38,8 @@
         float _RimAmount;
         fixed4 _RimColor;
         fixed4 _AmbientLightColor;
-    
+        float _FogDensity;
+
     
         sampler2D _MainTex;
         sampler2D _NoiseTex;
@@ -49,6 +51,7 @@
             float2 uv2_MainTex2;
             float2 uv3_MainTex3;
             half4 tangent;
+            float depth;
         };
 
         half _Glossiness;
@@ -65,9 +68,14 @@
         void vert (inout appdata_full v, out Input o) {
             UNITY_INITIALIZE_OUTPUT(Input,o);
             o.tangent = v.tangent;
+            o.depth = length(UnityObjectToViewPos(v.vertex).xyz);
         }
         float4 _color3,_color4;
         int _octaves;
+        
+        float3 hardLight(float blend, float3 target) {
+            return (blend > 0.5) * (1 - (1-target) * (1-2*(blend-0.5))) + (blend <= 0.5) * (target * (2*blend));
+        }
 
         void surf (Input IN, inout SurfaceOutput o) {
             float2 uv = _UvScale * IN.uv_MainTex;
@@ -114,11 +122,15 @@
             
             float colorTotal = _RainbowPercent + _ColorPercent + 0.0001;
 
-            o.Albedo = (_ColorPercent/colorTotal) * color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor / (colorTotal * colorTotal)  + _PoisonPercent * poisonColor;
+            o.Albedo = (_ColorPercent/colorTotal) * color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor / (colorTotal * colorTotal);
+            o.Albedo = hardLight(0.5 + _PoisonPercent * (2*f - 0.5), o.Albedo);
             o.Alpha = 1;
 
             if(IN.uv3_MainTex3.y > 0) {
                 o.Albedo = float3(1,1,1);
+            }
+            if(length(IN.tangent) < 0.001){
+                o.Albedo = (1/exp(min(IN.depth,10) * _FogDensity)) * float3(1,1,1) + _AmbientLightColor;
             }
         }
         
@@ -139,6 +151,10 @@
             //c.rgb = s.Albedo * (lightColor + (1-lightIntensity)*_AmbientLightColor + rim.rgb);
             c.rgb = s.Albedo;
             c.a = s.Alpha;
+            
+            if(s.Albedo.x < 0){
+                c.rgb = float3(1,1,1) / viewDir.z;
+            }
             
             return c;
         }
