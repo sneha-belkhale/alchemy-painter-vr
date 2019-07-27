@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ColorWheel
-  m_Shader: {fileID: 4800000, guid: c1672f491880b4cdbaf84fa51280ec96, type: 3}
+  m_Name: FluidBasic
+  m_Shader: {fileID: 4800000, guid: 57df4dfc37a95481fb51264be3f93fa6, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,10 +40,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: d671fe69ab6c644f6b07869199754eee, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -57,10 +61,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _ColorMask: 15
+    - _ColorPercent: 1.0003128
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _FillAmount: -1
+    - _FresnelPower: 0
+    - _GlitterPercent: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -68,18 +75,20 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _PoisonPercent: -0.0003128283
+    - _RainbowPercent: -4.4762368e-13
+    - _RimAmount: 1.2
+    - _Size: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
     - _UVSec: 0
-    - _UseUIAlphaClip: 0
     - _ZWrite: 1
+    - _octaves: 4
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _CursorPos: {r: 0.58, g: 0.51, b: 0, a: 0}
+    - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9738777, g: 0.24628866, b: 0.24888176, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FillColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}

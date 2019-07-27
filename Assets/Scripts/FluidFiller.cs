@@ -4,13 +4,17 @@ using System.Collections;
 public class FluidFiller : MonoBehaviour
 {
     public GameObject Syringe;
-    public GameObject Presser;
+    public Material SyringePartsMat;
+    private GameObject Presser;
+    private GameObject Applicator;
+    private GameObject Liquid;
+
     public GameObject MeshPainter;
 
     public GameObject FluidToFill;
     private Material FluidMat;
     private Material FluidMatTemp;
-    private Material SyringeMat;
+    private Material LiquidMat;
     private MeshPainterController MeshPainterController;
     private Material lastHighlightedMat;
 
@@ -24,12 +28,9 @@ public class FluidFiller : MonoBehaviour
         FluidMat = FluidToFill.GetComponent<Renderer>().material;
         FluidMatTemp = new Material(FluidMat);
         lastHighlightedMat = FluidMat;
-        SyringeMat = Syringe.GetComponent<Renderer>().material;
-        SyringeMat.SetFloat("_FillAmount", -1f);
-        SyringeMat.SetFloat("_GlitterPercent", 0);
-        SyringeMat.SetFloat("_PoisonPercent", 0);
-        SyringeMat.SetFloat("_ColorPercent", 0);
-        SyringeMat.SetFloat("_RainbowPercent", 0);
+
+        InitSyringeComponents();
+
         maxFill = 0.5f;
         minFill = -1f;
 
@@ -37,6 +38,35 @@ public class FluidFiller : MonoBehaviour
         scaleMaxFill = scale * (maxFill + 1f) - 1f;
 
         MeshPainterController = MeshPainter.GetComponent<MeshPainterController>();
+    }
+
+    void InitSyringeComponents()
+    {
+        Liquid = Syringe.transform.Find("Liquid").gameObject;
+        LiquidMat = Liquid.GetComponent<Renderer>().material;
+
+
+        Presser = Syringe.transform.Find("Presser").gameObject;
+        Applicator = Syringe.transform.Find("Applicator").gameObject;
+
+        Renderer[] renderers = Applicator.GetComponentsInChildren<Renderer>();
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].material = SyringePartsMat;
+        }
+
+        ResetMaterialParams(LiquidMat);
+        ResetMaterialParams(SyringePartsMat);
+    }
+
+    void ResetMaterialParams(Material mat) 
+    {
+        mat.SetFloat("_FillAmount", -1f);
+        mat.SetFloat("_GlitterPercent", 0);
+        mat.SetFloat("_PoisonPercent", 0);
+        mat.SetFloat("_ColorPercent", 0);
+        mat.SetFloat("_RainbowPercent", 0);
     }
 
     void HandlePlatformUpdate(Ray ray, bool fillEvent, bool emptyEvent)
@@ -115,12 +145,13 @@ public class FluidFiller : MonoBehaviour
 
     void EmptySyringe()
     {
-        float sFillAmount = SyringeMat.GetFloat("_FillAmount");
+        float sFillAmount = LiquidMat.GetFloat("_FillAmount");
         if (sFillAmount > minFill)
         {
             sFillAmount -= Time.deltaTime;
-            SyringeMat.SetFloat("_FillAmount", sFillAmount);
+            LiquidMat.SetFloat("_FillAmount", sFillAmount);
 
+            CopyWeightsToSyringeParts();
             SetPresserPos(sFillAmount);
         }
     }
@@ -170,14 +201,24 @@ public class FluidFiller : MonoBehaviour
         toMat.SetFloat("_RainbowPercent", rainbowPctNext);
     }
 
+    void CopyWeightsToSyringeParts()
+    {
 
+        SyringePartsMat.SetColor("_Color", LiquidMat.GetColor("_Color"));
+
+        SyringePartsMat.SetFloat("_FillAmount", LiquidMat.GetFloat("_FillAmount"));
+        SyringePartsMat.SetFloat("_GlitterPercent", LiquidMat.GetFloat("_GlitterPercent"));
+        SyringePartsMat.SetFloat("_ColorPercent", LiquidMat.GetFloat("_ColorPercent"));
+        SyringePartsMat.SetFloat("_PoisonPercent", LiquidMat.GetFloat("_PoisonPercent"));
+        SyringePartsMat.SetFloat("_RainbowPercent", LiquidMat.GetFloat("_RainbowPercent"));
+    }
 
     void FillTube(Material tubeMat)
     {
-        float sFillAmount = SyringeMat.GetFloat("_FillAmount");
+        float sFillAmount = LiquidMat.GetFloat("_FillAmount");
         float fillAmount = tubeMat.GetFloat("_FillAmount");
 
-        Color sColor = SyringeMat.GetColor("_Color");
+        Color sColor = LiquidMat.GetColor("_Color");
         Color color = tubeMat.GetColor("_Color");
 
         if (sFillAmount > minFill && fillAmount < scaleMaxFill)
@@ -188,7 +229,7 @@ public class FluidFiller : MonoBehaviour
             sFillAmount -= Time.deltaTime;
             fillAmount += Time.deltaTime;
             tubeMat.SetFloat("_FillAmount", fillAmount);
-            SyringeMat.SetFloat("_FillAmount", sFillAmount);
+            LiquidMat.SetFloat("_FillAmount", sFillAmount);
 
             if(sColor.a > 0)
             {
@@ -196,17 +237,19 @@ public class FluidFiller : MonoBehaviour
             }
             tubeMat.SetColor("_Color", color);
 
-            RecalculateWeights(SyringeMat, tubeMat, blend);
+            RecalculateWeights(LiquidMat, tubeMat, blend);
+
+            CopyWeightsToSyringeParts();
             SetPresserPos(sFillAmount);
         }
     }
 
     void EmptyTube(Material tubeMat)
     {
-        float sFillAmount = SyringeMat.GetFloat("_FillAmount");
+        float sFillAmount = LiquidMat.GetFloat("_FillAmount");
         float fillAmount = tubeMat.GetFloat("_FillAmount");
 
-        Color sColor = SyringeMat.GetColor("_Color");
+        Color sColor = LiquidMat.GetColor("_Color");
         Color color = tubeMat.GetColor("_Color");
 
         if (fillAmount > minFill && sFillAmount < maxFill)
@@ -217,19 +260,22 @@ public class FluidFiller : MonoBehaviour
             sFillAmount += Time.deltaTime;
             fillAmount -= Time.deltaTime;
             tubeMat.SetFloat("_FillAmount", fillAmount);
-            SyringeMat.SetFloat("_FillAmount", sFillAmount);
+            LiquidMat.SetFloat("_FillAmount", sFillAmount);
 
             if (color.a > 0)
             {
                 sColor = (1f - blendP) * color + blendP * sColor;
             }
 
-            SyringeMat.SetColor("_Color", sColor);
+            LiquidMat.SetColor("_Color", sColor);
 
-            RecalculateWeights(tubeMat, SyringeMat, blend);
+            RecalculateWeights(tubeMat, LiquidMat, blend);
 
+            CopyWeightsToSyringeParts();
             SetPresserPos(sFillAmount);
 
         }
+
+
     }
 }

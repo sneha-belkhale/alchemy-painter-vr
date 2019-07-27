@@ -408,11 +408,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tube
       objectReference: {fileID: 0}
-    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: fluidType
-      value: _ColorPercent
-      objectReference: {fileID: 0}
     - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -468,6 +463,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
+        type: 3}
+      propertyPath: fluidType
+      value: _ColorPercent
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6901b6e4234d4d26803a397f6079bac, type: 3}
 --- !u!4 &5845856221538285434 stripped
@@ -487,11 +487,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SourceTube (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: fluidType
-      value: _ColorPercent
       objectReference: {fileID: 0}
     - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}
@@ -547,6 +542,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
+        type: 3}
+      propertyPath: fluidType
+      value: _ColorPercent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6901b6e4234d4d26803a397f6079bac, type: 3}
@@ -574,11 +574,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SourceTube (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: fluidType
-      value: _PoisonPercent
-      objectReference: {fileID: 0}
     - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -643,6 +638,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.07132004
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
+        type: 3}
+      propertyPath: fluidType
+      value: _PoisonPercent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6901b6e4234d4d26803a397f6079bac, type: 3}
@@ -664,11 +664,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SourceTube (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: fluidType
-      value: _RainbowPercent
-      objectReference: {fileID: 0}
     - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -733,6 +728,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.07132004
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
+        type: 3}
+      propertyPath: fluidType
+      value: _RainbowPercent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6901b6e4234d4d26803a397f6079bac, type: 3}
@@ -760,11 +760,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SourceTube
       objectReference: {fileID: 0}
-    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
-        type: 3}
-      propertyPath: fluidType
-      value: _GlitterPercent
-      objectReference: {fileID: 0}
     - target: {fileID: 9220863830095558446, guid: b6901b6e4234d4d26803a397f6079bac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -819,6 +814,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5896160071773024949, guid: b6901b6e4234d4d26803a397f6079bac,
+        type: 3}
+      propertyPath: fluidType
+      value: _GlitterPercent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6901b6e4234d4d26803a397f6079bac, type: 3}
