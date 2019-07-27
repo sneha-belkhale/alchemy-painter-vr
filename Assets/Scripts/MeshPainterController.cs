@@ -34,8 +34,6 @@ public class MeshPainterController : MonoBehaviour
     {
         syringeMat = syringe.GetComponent<Renderer>().material;
 
-        InitSceneryNamed("DuckPond");
-
         lastHighlightedIndex = new Vector3Int(-1, -1, -1);
         lastHighlightedIndex2 = new Vector3Int();
         lastTrianglePaintStates = new List<TrianglePaintState>();
@@ -43,8 +41,9 @@ public class MeshPainterController : MonoBehaviour
         lastPaintedList = new List<List<TrianglePaintState>>();
 
         initializedSceneries = new List<string>();
+        EnableSceneryNamed("DuckPond");
 
-        maxRaycastDist = 0.1f;
+        maxRaycastDist = 10f;
     }
 
     public void DisableSceneryNamed(string sceneryName)
@@ -337,18 +336,24 @@ public class MeshPainterController : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        //on quit, we want to save ALL paintable objects 
-        GameObject[] paintableObjects = GameObject.FindGameObjectsWithTag("Paintable");
-        BinaryFormatter bf = new BinaryFormatter();
-        for (int i = 0; i < paintableObjects.Length; i++)
+        initializedSceneries.ForEach((sceneryName) =>
         {
-            Mesh mesh = paintableObjects[i].GetComponent<MeshFilter>().mesh;
-            SerializableMesh sMesh = new SerializableMesh(mesh.tangents, mesh.uv2, mesh.uv3);
-            string sceneryName = paintableObjects[i].transform.parent.name;
-            FileStream file = File.Create(Application.persistentDataPath + "/saved" + sceneryName + i.ToString() + ".gd");
-            bf.Serialize(file, sMesh);
-            file.Close();
-        }
+            GameObject scenery = GameObject.Find(sceneryName);
+            MeshFilter[] meshFilters = scenery.GetComponentsInChildren<MeshFilter>();
+
+            BinaryFormatter bf = new BinaryFormatter();
+
+            for (int i = 0; i < meshFilters.Length; i++)
+            {
+                Mesh mesh = meshFilters[i].mesh;
+                SerializableMesh sMesh = new SerializableMesh(mesh.tangents, mesh.uv2, mesh.uv3);
+                FileStream file = File.Create(Application.persistentDataPath + "/saved" + sceneryName + i.ToString() + ".gd");
+                bf.Serialize(file, sMesh);
+                file.Close();
+
+            }
+
+        });
     }
 
     private void SetPaintableObjects(GameObject[] paintableObjects, string sceneryObjPath)
