@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 struct TrianglePaintState
 {
@@ -13,6 +15,7 @@ struct TrianglePaintState
 
 public class MeshPainterController : MonoBehaviour
 {
+
     public GameObject syringe;
     private Material syringeMat;
 
@@ -24,20 +27,62 @@ public class MeshPainterController : MonoBehaviour
 
     private List<List<TrianglePaintState>> lastPaintedList; 
     private List<TrianglePaintState> lastTrianglePaintStates;
+    public List<string> initializedSceneries;
 
     // Start is called before the first frame update
     void Start()
     {
         syringeMat = syringe.GetComponent<Renderer>().material;
-        GameObject[] paintableObjects = GameObject.FindGameObjectsWithTag("Paintable");
-        InitPaintableObjects(paintableObjects);
+
+        InitSceneryNamed("DuckPond");
+
         lastHighlightedIndex = new Vector3Int(-1, -1, -1);
         lastHighlightedIndex2 = new Vector3Int();
         lastTrianglePaintStates = new List<TrianglePaintState>();
 
         lastPaintedList = new List<List<TrianglePaintState>>();
 
+        initializedSceneries = new List<string>();
+
         maxRaycastDist = 0.1f;
+    }
+
+    public void DisableSceneryNamed(string sceneryName)
+    {
+        GameObject scenery = GameObject.Find(sceneryName);
+        for (int i = 0; i < scenery.transform.childCount; i++)
+        {
+            scenery.transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+    public void EnableSceneryNamed(string sceneryName)
+    {
+        GameObject scenery = GameObject.Find(sceneryName);
+        for (int i = 0; i < scenery.transform.childCount; i++)
+        {
+            scenery.transform.GetChild(i).gameObject.SetActive(true);
+        }
+        if(!initializedSceneries.Contains(sceneryName))
+        {
+            InitSceneryNamed(sceneryName);
+        }
+    }
+
+    public void InitSceneryNamed(string sceneryName)
+    {
+        GameObject scenery = GameObject.Find(sceneryName);
+        GameObject[] paintableObjects = new GameObject[scenery.transform.childCount];
+        for (int i = 0; i < paintableObjects.Length; i++)
+        {
+            paintableObjects[i] = scenery.transform.GetChild(i).gameObject;
+        }
+        InitPaintableObjects(paintableObjects);
+        string sceneryObjPath = Application.persistentDataPath + "/saved" + sceneryName;
+        if (File.Exists(sceneryObjPath + "0.gd"))
+        {
+            SetPaintableObjects(paintableObjects, sceneryObjPath);
+        }
+        initializedSceneries.Add(sceneryName);
     }
 
     void InitPaintableObjects( GameObject[] paintableObjects)
@@ -288,5 +333,65 @@ public class MeshPainterController : MonoBehaviour
             Ray ray = new Ray(syringe.transform.position, -syringe.transform.up);
             HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger), OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger));
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        //on quit, we want to save ALL paintable objects 
+        GameObject[] paintableObjects = GameObject.FindGameObjectsWithTag("Paintable");
+        BinaryFormatter bf = new BinaryFormatter();
+        for (int i = 0; i < paintableObjects.Length; i++)
+        {
+            Mesh mesh = paintableObjects[i].GetComponent<MeshFilter>().mesh;
+            SerializableMesh sMesh = new SerializableMesh(mesh.tangents, mesh.uv2, mesh.uv3);
+            string sceneryName = paintableObjects[i].transform.parent.name;
+            FileStream file = File.Create(Application.persistentDataPath + "/saved" + sceneryName + i.ToString() + ".gd");
+            bf.Serialize(file, sMesh);
+            file.Close();
+        }
+    }
+
+    private void SetPaintableObjects(GameObject[] paintableObjects, string sceneryObjPath)
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        for (int i = 0; i < paintableObjects.Length; i++)
+        {
+            FileStream file = File.Open(sceneryObjPath + i.ToString() + ".gd", FileMode.Open);
+            SerializableMesh sMesh = (SerializableMesh)bf.Deserialize(file);
+            file.Close();
+
+            Mesh mesh = paintableObjects[i].GetComponent<MeshFilter>().mesh;
+            CopyMeshFromSerializedMesh(mesh, sMesh);
+        }
+    }
+
+    private void CopyMeshFromSerializedMesh(Mesh targetMesh, SerializableMesh sMesh)
+    {
+        int[] triangles = targetMesh.triangles;
+        Vector4[] newTangents = targetMesh.tangents;
+        Vector2[] newUv2s = targetMesh.uv2;
+        Vector2[] newUv3s = targetMesh.uv3;
+
+        for (int i = 0; i < newTangents.Length; i++)
+        {
+            newTangents[i] = new Vector4(
+            sMesh._tangents[i].x,
+            sMesh._tangents[i].y,
+            sMesh._tangents[i].z,
+            sMesh._tangents[i].w);
+
+            newUv2s[i] = new Vector2(
+            sMesh._uv2[i].x,
+            sMesh._uv2[i].y
+            );
+
+            newUv3s[i] = new Vector2(
+            sMesh._uv3[i].x,
+            sMesh._uv3[i].y
+            );
+        }
+        targetMesh.tangents = newTangents;
+        targetMesh.uv2 = newUv2s;
+        targetMesh.uv3 = newUv3s;
     }
 }
