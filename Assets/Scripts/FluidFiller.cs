@@ -91,7 +91,7 @@ public class FluidFiller : MonoBehaviour
             Ray ray = new Ray();
             ray.origin = Syringe.transform.position;
             ray.direction = -Syringe.transform.up;
-            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown), OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp));
+            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp), OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown));
         }
     }
 
@@ -162,7 +162,6 @@ public class FluidFiller : MonoBehaviour
 
         float glitterPctNext = (glitterPct * blend + (sGlitterPct * Time.deltaTime)) / (blend + Time.deltaTime);
         float colorPctNext = (colorPct * blend + (sColorPct * Time.deltaTime)) / (blend + Time.deltaTime);
-        Debug.Log(colorPctNext);
         float poisonPctNext = (poisonPct * blend + (sPoisonPct * Time.deltaTime)) / (blend + Time.deltaTime);
         float rainbowPctNext = (rainbowPct * blend + (sRainbowPct * Time.deltaTime)) / (blend + Time.deltaTime);
         toMat.SetFloat("_GlitterPercent", glitterPctNext);

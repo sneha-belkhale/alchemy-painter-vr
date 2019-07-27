@@ -5,6 +5,8 @@ using UnityEngine;
 public class ColorWheelPicker : MonoBehaviour
 {
     public Texture2D colorWheelTex;
+    private Material colorWheelMat;
+
     public GameObject colorSourceTube;
     private Material colorSourceTubeMat;
 
@@ -16,11 +18,15 @@ public class ColorWheelPicker : MonoBehaviour
 
     private Color lastColorSelected;
     private bool isHovering;
+
     // Start is called before the first frame update
     void Start()
     {
+        colorWheelMat = GetComponent<MeshRenderer>().material;
+
         colorSourceTubeMat = colorSourceTube.GetComponent<Renderer>().material;
         rainbowSourceTubeMat = rainbowSourceTube.GetComponent<Renderer>().material;
+
         lastColorSelected = colorSourceTubeMat.GetColor("_Color");
         isHovering = false;
     }
@@ -36,6 +42,9 @@ public class ColorWheelPicker : MonoBehaviour
             isHovering = true;
             Vector2 texCoord = hit.textureCoord;
             Color color = colorWheelTex.GetPixelBilinear(texCoord.x, texCoord.y);
+
+            colorWheelMat.SetVector("_CursorPos", new Vector4(texCoord.x, texCoord.y));
+
             colorSourceTubeMat.SetColor("_Color", color);
             rainbowSourceTubeMat.SetColor("_Color", color);
 
@@ -46,8 +55,11 @@ public class ColorWheelPicker : MonoBehaviour
         }
         else if (isHovering)
         {
+            colorWheelMat.SetVector("_CursorPos", new Vector4(-1f, -1f));
+
             colorSourceTubeMat.SetColor("_Color", lastColorSelected);
             rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
+
             isHovering = false;
         }
     }

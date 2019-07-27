@@ -43,7 +43,7 @@ public class MeshPainterController : MonoBehaviour
         initializedSceneries = new List<string>();
         EnableSceneryNamed("DuckPond");
 
-        maxRaycastDist = 10f;
+        maxRaycastDist = 0.1f;
     }
 
     public void DisableSceneryNamed(string sceneryName)
@@ -334,7 +334,7 @@ public class MeshPainterController : MonoBehaviour
         }
     }
 
-    private void OnApplicationQuit()
+    private void OnApplicationPause()
     {
         initializedSceneries.ForEach((sceneryName) =>
         {
@@ -347,12 +347,11 @@ public class MeshPainterController : MonoBehaviour
             {
                 Mesh mesh = meshFilters[i].mesh;
                 SerializableMesh sMesh = new SerializableMesh(mesh.tangents, mesh.uv2, mesh.uv3);
+
                 FileStream file = File.Create(Application.persistentDataPath + "/saved" + sceneryName + i.ToString() + ".gd");
                 bf.Serialize(file, sMesh);
                 file.Close();
-
             }
-
         });
     }
 
