@@ -17,12 +17,15 @@ public class MeshPainterController : MonoBehaviour
 {
 
     public GameObject syringe;
+    public GameObject ScenePicker;
+
     private Material syringeMat;
 
     public Vector3Int lastHighlightedIndex;
     private Vector3Int lastHighlightedIndex2;
     public Mesh lastHighlightedMesh;
 
+    private string currentScenery;
     private float maxRaycastDist;
 
     private List<List<TrianglePaintState>> lastPaintedList; 
@@ -39,9 +42,7 @@ public class MeshPainterController : MonoBehaviour
         lastTrianglePaintStates = new List<TrianglePaintState>();
 
         lastPaintedList = new List<List<TrianglePaintState>>();
-
         initializedSceneries = new List<string>();
-        EnableSceneryNamed("DuckPond");
 
         maxRaycastDist = 0.1f;
     }
@@ -65,6 +66,7 @@ public class MeshPainterController : MonoBehaviour
         {
             InitSceneryNamed(sceneryName);
         }
+        currentScenery = sceneryName;
     }
 
     public void InitSceneryNamed(string sceneryName)
@@ -304,6 +306,12 @@ public class MeshPainterController : MonoBehaviour
         }
     }
 
+    void ExitToMenu()
+    {
+        DisableSceneryNamed(currentScenery);
+        ScenePicker.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -313,7 +321,12 @@ public class MeshPainterController : MonoBehaviour
         {
             Undo();
         }
-        
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            ExitToMenu();
+        }
+
         RemoveLastHighlight();
 
         //check if you are raycasting against this mesh

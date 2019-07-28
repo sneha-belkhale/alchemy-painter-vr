@@ -61,7 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _ColorPercent: 1.0003128
+    - _ColorPercent: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -75,8 +75,8 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PoisonPercent: -0.0003128283
-    - _RainbowPercent: -4.4762368e-13
+    - _PoisonPercent: 0
+    - _RainbowPercent: 0
     - _RimAmount: 1.2
     - _Size: 1
     - _SmoothnessTextureChannel: 0
@@ -87,7 +87,7 @@ Material:
     - _octaves: 4
     m_Colors:
     - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.9738777, g: 0.24628866, b: 0.24888176, a: 1}
+    - _Color: {r: 0.17924252, g: 0.17924252, b: 0.17924252, a: 0.99999994}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FillColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
