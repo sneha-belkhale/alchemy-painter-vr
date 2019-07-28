@@ -946,6 +946,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 99957c54560644a40bbe5fa247796d7c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 99957c54560644a40bbe5fa247796d7c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2339,7 +2344,7 @@ GameObject:
   - component: {fileID: 1968205909}
   - component: {fileID: 1968205908}
   m_Layer: 12
-  m_Name: ScenePond
+  m_Name: SceneHeads
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

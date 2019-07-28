@@ -61,13 +61,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _ColorPercent: 1
+    - _ColorPercent: 0.57167524
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FillAmount: 0.39207393
+    - _FillAmount: 0.5002966
     - _FresnelPower: 0
-    - _GlitterPercent: 0
+    - _GlitterPercent: 0.40780059
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -87,7 +87,7 @@ Material:
     - _octaves: 4
     m_Colors:
     - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1.0000725, g: 0.68824345, b: 0.60768056, a: 1}
+    - _Color: {r: 0.6445669, g: 0.27235144, b: 0.26890993, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FillColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
