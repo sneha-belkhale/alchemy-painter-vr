@@ -20,6 +20,7 @@ public class MeshPainterController : MonoBehaviour
     public GameObject ScenePicker;
 
     private Material syringeMat;
+    private GameObject rightController;
 
     public Vector3Int lastHighlightedIndex;
     private Vector3Int lastHighlightedIndex2;
@@ -35,6 +36,8 @@ public class MeshPainterController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        rightController = GameObject.Find("RightControllerAnchor");
+
         syringeMat = syringe.GetComponent<Renderer>().material;
 
         lastHighlightedIndex = new Vector3Int(-1, -1, -1);
@@ -44,7 +47,7 @@ public class MeshPainterController : MonoBehaviour
         lastPaintedList = new List<List<TrianglePaintState>>();
         initializedSceneries = new List<string>();
 
-        maxRaycastDist = 0.1f;
+        maxRaycastDist = 10.1f;
     }
 
     public void DisableSceneryNamed(string sceneryName)
@@ -342,7 +345,7 @@ public class MeshPainterController : MonoBehaviour
         // ************** VR Controls ************** //
         else
         {
-            Ray ray = new Ray(syringe.transform.position, -syringe.transform.up);
+            Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
             HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger), OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger));
         }
     }

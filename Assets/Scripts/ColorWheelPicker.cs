@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ColorWheelPicker : MonoBehaviour
 {
+    private GameObject rightController;
+
     public Texture2D colorWheelTex;
     private Material colorWheelMat;
 
@@ -13,15 +15,14 @@ public class ColorWheelPicker : MonoBehaviour
     public GameObject rainbowSourceTube;
     private Material rainbowSourceTubeMat;
 
-    public GameObject syringe;
-
-
     private Color lastColorSelected;
     private bool isHovering;
 
     // Start is called before the first frame update
     void Start()
     {
+        rightController = GameObject.Find("RightControllerAnchor");
+
         colorWheelMat = GetComponent<MeshRenderer>().material;
 
         colorSourceTubeMat = colorSourceTube.GetComponent<Renderer>().material;
@@ -76,7 +77,7 @@ public class ColorWheelPicker : MonoBehaviour
         }
         else
         {
-            Ray ray = new Ray(syringe.transform.position, -syringe.transform.up);
+            Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
             HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger));
         }
     }

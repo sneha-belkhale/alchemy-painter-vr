@@ -9,6 +9,8 @@ public class FluidFiller : MonoBehaviour
     private GameObject Applicator;
     private GameObject Liquid;
 
+    private GameObject rightController;
+
     public GameObject MeshPainter;
 
     public GameObject FluidToFill;
@@ -25,6 +27,8 @@ public class FluidFiller : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        rightController = GameObject.Find("RightControllerAnchor");
+
         FluidMat = FluidToFill.GetComponent<Renderer>().material;
         FluidMatTemp = new Material(FluidMat);
         lastHighlightedMat = FluidMat;
@@ -118,9 +122,7 @@ public class FluidFiller : MonoBehaviour
         }
         // ************** VR Controls ************** //
         else {
-            Ray ray = new Ray();
-            ray.origin = Syringe.transform.position;
-            ray.direction = -Syringe.transform.up;
+            Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
             HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp), OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown));
         }
     }
