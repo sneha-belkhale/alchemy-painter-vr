@@ -61,13 +61,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _ColorPercent: 0.57167524
+    - _ColorPercent: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FillAmount: 0.5002966
+    - _FillAmount: -1
     - _FresnelPower: 0
-    - _GlitterPercent: 0.40780059
+    - _GlitterPercent: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1

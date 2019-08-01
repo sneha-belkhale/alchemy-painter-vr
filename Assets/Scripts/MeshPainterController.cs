@@ -25,6 +25,7 @@ public class MeshPainterController : MonoBehaviour
     public Vector3Int lastHighlightedIndex;
     private Vector3Int lastHighlightedIndex2;
     public Mesh lastHighlightedMesh;
+    private bool wireframeOn;
 
     private string currentScenery;
     private float maxRaycastDist;
@@ -46,6 +47,8 @@ public class MeshPainterController : MonoBehaviour
 
         lastPaintedList = new List<List<TrianglePaintState>>();
         initializedSceneries = new List<string>();
+
+        wireframeOn = false;
 
         maxRaycastDist = 10.1f;
     }
@@ -112,6 +115,7 @@ public class MeshPainterController : MonoBehaviour
         Vector2[] newUvs;
         Vector2[] newUv2s;
         Vector2[] newUv3s;
+        Vector2[] newUv4s;
 
         int n = triangles.Length;
         newVerts = new Vector3[n];
@@ -120,6 +124,7 @@ public class MeshPainterController : MonoBehaviour
         newUvs = new Vector2[n];
         newUv2s = new Vector2[n];
         newUv3s = new Vector2[n];
+        newUv4s = new Vector2[n];
 
         for (int i = 0; i < n; i++)
         {
@@ -130,6 +135,18 @@ public class MeshPainterController : MonoBehaviour
                 newUvs[i] = uvs[triangles[i]];
             }
             triangles[i] = i;
+            //barycentric coords 
+            if (i%3 == 0)
+            {
+                newUv4s[i] = new Vector2(0, 1);
+            } else if (i % 3 == 1)
+            {
+                newUv4s[i] = new Vector2(0, 0);
+            }
+            else
+            {
+                newUv4s[i] = new Vector2(1, 0);
+            }
         }
         targetMesh.vertices = newVerts;
         targetMesh.normals = newNormals;
@@ -137,7 +154,24 @@ public class MeshPainterController : MonoBehaviour
         targetMesh.uv = newUvs;
         targetMesh.uv2 = newUv2s;
         targetMesh.uv3 = newUv3s;
+        targetMesh.uv4 = newUv4s;
         targetMesh.triangles = triangles;
+
+    }
+
+    void ToggleWireframe()
+    {
+        GameObject scenery = GameObject.Find(currentScenery);
+        MeshRenderer[] meshRenderers = scenery.GetComponentsInChildren<MeshRenderer>();
+
+        int wireframeOnInt = wireframeOn ? 1 : 0;
+
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            meshRenderers[i].material.SetInt("_Wireframe", wireframeOnInt);
+        }
+
+        wireframeOn = !wireframeOn;
     }
 
     void RemoveLastHighlight()
@@ -323,6 +357,11 @@ public class MeshPainterController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.U) || OVRInput.GetDown(OVRInput.RawButton.B))
         {
             Undo();
+        }
+
+        if (Input.GetKeyDown(KeyCode.I) || OVRInput.GetDown(OVRInput.RawButton.A))
+        {
+            ToggleWireframe();
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))

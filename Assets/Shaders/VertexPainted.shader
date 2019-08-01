@@ -12,12 +12,14 @@
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _MainTex2 ("Albedo (RGB)", 2D) = "white" {}
         _MainTex3 ("Albedo (RGB)", 2D) = "white" {}
+        _MainTex4 ("Albedo (RGB)", 2D) = "white" {}
         _NoiseTex ("Noise Texture", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _octaves ("Octaves", Int) = 4
         _UvScale ("UV Scale", Range(1,20)) = 1
         _HighlightColor ("Highlight Color", Color) = (0,0,0,1)
+        _Wireframe ("Wireframe", Int) = 0
     }
     SubShader
     {
@@ -43,12 +45,14 @@
         sampler2D _MainTex;
         sampler2D _NoiseTex;
         float _UvScale;
+        int _Wireframe;
 
         struct Input
         {
             float2 uv_MainTex: TEXCOORD0;
             float2 uv2_MainTex2;
             float2 uv3_MainTex3;
+            float2 uv4_MainTex4;
             half4 tangent;
             float depth;
         };
@@ -126,10 +130,22 @@
             // default depth shade 
             if(length(IN.tangent) < 0.001){
                 o.Albedo = (1/exp(min(IN.depth,10) * _FogDensity)) * float3(1,1,1) + _AmbientLightColor;
+                o.Albedo = clamp(o.Albedo, 0, 1);
+
             }
             // highlighting 
             if(IN.uv3_MainTex3.y > 0) {
                 o.Albedo = _HighlightColor;
+            }
+            // wireframe 
+            if ( _Wireframe > 0 ) {
+                float3 barys = float3(IN.uv4_MainTex4.xy, 1-IN.uv4_MainTex4.x-IN.uv4_MainTex4.y);
+                float3 deltas = fwidth(barys);
+                barys = smoothstep(0, deltas, barys);
+
+                float minBary = min(min(barys.x,barys.y),barys.z);
+                //o.Albedo += (1 - minBary)*float3(0.5,0.5,0.5);
+                o.Albedo -= 0.14*(1-minBary);
             }
         }
         
