@@ -10,7 +10,7 @@
         _FillColor ("Fill Color", Color) = (1, 1, 1, 1)
         _FogDensity ("Fog Density", Range(0, 1)) = 0
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
-        _MainTex2 ("Albedo (RGB)", 2D) = "white" {}
+        _MainTex2 ("Dissolve (RGB)", 2D) = "white" {}
         _MainTex3 ("Albedo (RGB)", 2D) = "white" {}
         _MainTex4 ("Albedo (RGB)", 2D) = "white" {}
         _NoiseTex ("Noise Texture", 2D) = "white" {}
@@ -19,7 +19,7 @@
         _octaves ("Octaves", Int) = 4
         _UvScale ("UV Scale", Range(1,20)) = 1
         _HighlightColor ("Highlight Color", Color) = (0,0,0,1)
-        _Wireframe ("Wireframe", Int) = 0
+        _DissolveAmount ("Dissolve Amount", Range(-1,1)) = 0
     }
     SubShader
     {
@@ -43,9 +43,10 @@
         fixed4 _HighlightColor;
     
         sampler2D _MainTex;
+        sampler2D _MainTex2; // dissolve tex 
         sampler2D _NoiseTex;
         float _UvScale;
-        int _Wireframe;
+        float _DissolveAmount;
 
         struct Input
         {
@@ -130,23 +131,33 @@
             // default depth shade 
             if(length(IN.tangent) < 0.001){
                 o.Albedo = (1/exp(min(IN.depth,10) * _FogDensity)) * float3(1,1,1) + _AmbientLightColor;
-                o.Albedo = clamp(o.Albedo, 0, 1);
-
             }
             // highlighting 
             if(IN.uv3_MainTex3.y > 0) {
                 o.Albedo = _HighlightColor;
             }
+            
             // wireframe 
-            if ( _Wireframe > 0 ) {
-                float3 barys = float3(IN.uv4_MainTex4.xy, 1-IN.uv4_MainTex4.x-IN.uv4_MainTex4.y);
-                float3 deltas = fwidth(barys);
-                barys = smoothstep(0, deltas, barys);
+            o.Albedo = clamp(o.Albedo, 0, 1);
+            
+            float3 barys = float3(IN.uv4_MainTex4.xy, 1-IN.uv4_MainTex4.x-IN.uv4_MainTex4.y);
+            float3 deltas = fwidth(barys);
+            barys = smoothstep(0, deltas, barys);
 
-                float minBary = min(min(barys.x,barys.y),barys.z);
-                //o.Albedo += (1 - minBary)*float3(0.5,0.5,0.5);
-                o.Albedo -= 0.14*(1-minBary);
-            }
+            float minBary = min(min(barys.x,barys.y),barys.z);
+            //o.Albedo += (1 - minBary)*float3(0.5,0.5,0.5);
+            
+            float finalWireframe = 0.5 * (1-minBary);
+            
+            float dissolve = tex2D(_MainTex2, 0.2 * _UvScale * IN.uv_MainTex).r;
+            float dissolveScroll = tex2D(_MainTex2, 0.1 * _UvScale * IN.uv_MainTex + 0.5 * cos(0.5*_Time.y)).r;
+            finalWireframe *= clamp(dissolve - _DissolveAmount, 0, 1);
+            
+            float3 wireframeColor = float3(dissolveScroll*(_DissolveAmount+1),
+            5*dissolveScroll*(_DissolveAmount+1),
+            10*dissolveScroll*(_DissolveAmount+1)
+            );
+            o.Albedo = lerp(o.Albedo,wireframeColor,finalWireframe);
         }
         
         
@@ -166,11 +177,6 @@
             //c.rgb = s.Albedo * (lightColor + (1-lightIntensity)*_AmbientLightColor + rim.rgb);
             c.rgb = s.Albedo;
             c.a = s.Alpha;
-            
-            if(s.Albedo.x < 0){
-                c.rgb = float3(1,1,1) / viewDir.z;
-            }
-            
             return c;
         }
         

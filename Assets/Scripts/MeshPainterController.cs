@@ -159,16 +159,57 @@ public class MeshPainterController : MonoBehaviour
 
     }
 
+    IEnumerator FadeInWireframe()
+    {
+        GameObject scenery = GameObject.Find(currentScenery);
+        MeshRenderer[] meshRenderers = scenery.GetComponentsInChildren<MeshRenderer>();
+        float curDissolveAmount = meshRenderers[0].material.GetFloat("_DissolveAmount");
+
+        while(curDissolveAmount > -1)
+        {
+            curDissolveAmount = curDissolveAmount - Time.deltaTime;
+            for (int i = 0; i < meshRenderers.Length; i++)
+            {
+                meshRenderers[i].material.SetFloat("_DissolveAmount", curDissolveAmount);
+            }
+            yield return null;
+        }
+        yield return 0;
+    }
+
+    IEnumerator FadeOutWireframe()
+    {
+        GameObject scenery = GameObject.Find(currentScenery);
+        MeshRenderer[] meshRenderers = scenery.GetComponentsInChildren<MeshRenderer>();
+
+        float curDissolveAmount = meshRenderers[0].material.GetFloat("_DissolveAmount");
+
+        while (curDissolveAmount < 1)
+        {
+            curDissolveAmount = curDissolveAmount + Time.deltaTime;
+            for (int i = 0; i < meshRenderers.Length; i++)
+            {
+                meshRenderers[i].material.SetFloat("_DissolveAmount", curDissolveAmount);
+            }
+            yield return null;
+        }
+        yield return 0;
+    }
+
     void ToggleWireframe()
     {
         GameObject scenery = GameObject.Find(currentScenery);
         MeshRenderer[] meshRenderers = scenery.GetComponentsInChildren<MeshRenderer>();
 
-        int wireframeOnInt = wireframeOn ? 1 : 0;
-
-        for (int i = 0; i < meshRenderers.Length; i++)
+        if (wireframeOn)
         {
-            meshRenderers[i].material.SetInt("_Wireframe", wireframeOnInt);
+            StartCoroutine("FadeOutWireframe");
+            StopCoroutine("FadeInWireframe");
+        }
+        else
+        {
+            StartCoroutine("FadeInWireframe");
+            StopCoroutine("FadeOutWireframe");
         }
 
         wireframeOn = !wireframeOn;
