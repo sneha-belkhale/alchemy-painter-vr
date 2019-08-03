@@ -33,6 +33,8 @@ public class MeshPainterController : MonoBehaviour
     private List<TrianglePaintState> lastTrianglePaintStates;
     public List<string> initializedSceneries;
 
+    public Material saveMat;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,9 +53,15 @@ public class MeshPainterController : MonoBehaviour
         maxRaycastDist = 10.1f;
     }
 
+    void ExitToMenu()
+    {
+        DisableSceneryNamed(currentScenery);
+        ScenePicker.SetActive(true);
+    }
+
     public void DisableSceneryNamed(string sceneryName)
     {
-        GameObject scenery = GameObject.Find(sceneryName);
+        GameObject scenery = GameObject.Find(sceneryName).transform.GetChild(0).gameObject;
         for (int i = 0; i < scenery.transform.childCount; i++)
         {
             scenery.transform.GetChild(i).gameObject.SetActive(false);
@@ -61,21 +69,24 @@ public class MeshPainterController : MonoBehaviour
     }
     public void EnableSceneryNamed(string sceneryName)
     {
-        GameObject scenery = GameObject.Find(sceneryName);
+        GameObject scenery = GameObject.Find(sceneryName).transform.GetChild(0).gameObject;
         for (int i = 0; i < scenery.transform.childCount; i++)
         {
-            scenery.transform.GetChild(i).gameObject.SetActive(true);
+            GameObject currentChild = scenery.transform.GetChild(i).gameObject;
+            currentChild.SetActive(true);
+            currentChild.GetComponent<MeshRenderer>().material.SetFloat("_DissolveAmount", -1);
         }
         if(!initializedSceneries.Contains(sceneryName))
         {
             InitSceneryNamed(sceneryName);
         }
         currentScenery = sceneryName;
+        StartCoroutine("FadeOutWireframe");
     }
 
     public void InitSceneryNamed(string sceneryName)
     {
-        GameObject scenery = GameObject.Find(sceneryName);
+        GameObject scenery = GameObject.Find(sceneryName).transform.GetChild(0).gameObject;
         GameObject[] paintableObjects = new GameObject[scenery.transform.childCount];
         for (int i = 0; i < paintableObjects.Length; i++)
         {
@@ -195,9 +206,6 @@ public class MeshPainterController : MonoBehaviour
 
     void ToggleWireframe()
     {
-        GameObject scenery = GameObject.Find(currentScenery);
-        MeshRenderer[] meshRenderers = scenery.GetComponentsInChildren<MeshRenderer>();
-
         if (wireframeOn)
         {
             StartCoroutine("FadeOutWireframe");
@@ -364,12 +372,6 @@ public class MeshPainterController : MonoBehaviour
         }
     }
 
-    void ExitToMenu()
-    {
-        DisableSceneryNamed(currentScenery);
-        ScenePicker.SetActive(true);
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -420,7 +422,7 @@ public class MeshPainterController : MonoBehaviour
     {
         initializedSceneries.ForEach((sceneryName) =>
         {
-            GameObject scenery = GameObject.Find(sceneryName);
+            GameObject scenery = GameObject.Find(sceneryName).transform.GetChild(0).gameObject;
             MeshFilter[] meshFilters = scenery.GetComponentsInChildren<MeshFilter>();
 
             BinaryFormatter bf = new BinaryFormatter();
