@@ -23,7 +23,6 @@ public class MeshPainterController : MonoBehaviour
     private GameObject rightController;
 
     public Vector3Int lastHighlightedIndex;
-    private Vector3Int lastHighlightedIndex2;
     public Mesh lastHighlightedMesh;
     private bool wireframeOn;
 
@@ -42,7 +41,6 @@ public class MeshPainterController : MonoBehaviour
         syringeMat = syringe.GetComponent<Renderer>().material;
 
         lastHighlightedIndex = new Vector3Int(-1, -1, -1);
-        lastHighlightedIndex2 = new Vector3Int();
         lastTrianglePaintStates = new List<TrianglePaintState>();
 
         lastPaintedList = new List<List<TrianglePaintState>>();
@@ -156,7 +154,6 @@ public class MeshPainterController : MonoBehaviour
         targetMesh.uv3 = newUv3s;
         targetMesh.uv4 = newUv4s;
         targetMesh.triangles = triangles;
-
     }
 
     IEnumerator FadeInWireframe()
@@ -222,9 +219,6 @@ public class MeshPainterController : MonoBehaviour
         uv3Array[lastHighlightedIndex.x].y = 0;
         uv3Array[lastHighlightedIndex.y].y = 0;
         uv3Array[lastHighlightedIndex.z].y = 0;
-        //uv3Array[lastHighlightedIndex2.x].y = 0; //quads?
-        //uv3Array[lastHighlightedIndex2.y].y = 0;
-        //uv3Array[lastHighlightedIndex2.z].y = 0;
         lastHighlightedMesh.uv3 = uv3Array;
         lastHighlightedIndex.Set(-1, -1, -1);
     }
@@ -279,35 +273,21 @@ public class MeshPainterController : MonoBehaviour
     {
         if (tIdx * 3 == lastHighlightedIndex.x) return;
 
-        //int idx;
-        //if (hit.triangleIndex % 2 == 0) // quads?
-        //{
-        //    idx = hit.triangleIndex;
-        //}
-        //else
-        //{
-        //    idx = hit.triangleIndex - 1;
-        //}
         int idx = tIdx;
 
         //check if already highlighted 
-
         Vector2[] uv3Array = mesh.uv3;
         int[] triangles = mesh.triangles;
 
         uv3Array[triangles[idx * 3 + 0]].y = 1;
         uv3Array[triangles[idx * 3 + 1]].y = 1;
         uv3Array[triangles[idx * 3 + 2]].y = 1;
-        //uv3Array[triangles[(idx + 1) * 3 + 0]].y = 1;
-        //uv3Array[triangles[(idx + 1) * 3 + 1]].y = 1; // quads?
-        //uv3Array[triangles[(idx + 1) * 3 + 2]].y = 1;
+
         mesh.uv3 = uv3Array;
         lastHighlightedIndex.x = triangles[idx * 3 + 0];
         lastHighlightedIndex.y = triangles[idx * 3 + 1];
         lastHighlightedIndex.z = triangles[idx * 3 + 2];
-        //lastHighlightedIndex2.x = triangles[(idx + 1) * 3 + 0];
-        //lastHighlightedIndex2.y = triangles[(idx + 1) * 3 + 1]; // quads?
-        //lastHighlightedIndex2.z = triangles[(idx + 1) * 3 + 2];
+
         lastHighlightedMesh = mesh;
     }
 
@@ -412,10 +392,6 @@ public class MeshPainterController : MonoBehaviour
 
         RemoveLastHighlight();
 
-        //check if you are raycasting against this mesh
-        RaycastHit hit;
-        int layerMask = 1 << 9;
-
         // ************** Keyboard Controls ************** //
         if (!isConnected)
         {
@@ -431,6 +407,16 @@ public class MeshPainterController : MonoBehaviour
     }
 
     private void OnApplicationPause()
+    {
+        SaveSceneriesToDisk();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveSceneriesToDisk();
+    }
+
+    private void SaveSceneriesToDisk()
     {
         initializedSceneries.ForEach((sceneryName) =>
         {

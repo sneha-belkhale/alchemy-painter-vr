@@ -87,7 +87,7 @@ Material:
     - _octaves: 4
     m_Colors:
     - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.6445669, g: 0.27235144, b: 0.26890993, a: 1}
+    - _Color: {r: 0.17387938, g: 0.17387938, b: 0.17387938, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FillColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
