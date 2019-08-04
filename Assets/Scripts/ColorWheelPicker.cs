@@ -18,6 +18,11 @@ public class ColorWheelPicker : MonoBehaviour
     private Color lastColorSelected;
     private bool isHovering;
 
+    private MeshPainterController meshPainterController;
+    public GameObject meshPainter;
+
+    private bool paintMode; 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +35,9 @@ public class ColorWheelPicker : MonoBehaviour
 
         lastColorSelected = colorSourceTubeMat.GetColor("_Color");
         isHovering = false;
+
+        meshPainterController = meshPainter.GetComponent<MeshPainterController>();
+        paintMode = false;
     }
 
     void HandlePlatformUpdate(Ray ray, bool selectColorEvent)
@@ -63,6 +71,14 @@ public class ColorWheelPicker : MonoBehaviour
 
             isHovering = false;
         }
+
+        // check paint mode button 
+        layerMask = 1 << 13;
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask) && selectColorEvent)
+        {
+            paintMode = !paintMode;
+            meshPainterController.objectPaintMode = paintMode;
+        }
     }
 
     // Update is called once per frame
@@ -73,12 +89,12 @@ public class ColorWheelPicker : MonoBehaviour
         if (!isConnected)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            HandlePlatformUpdate(ray, Input.GetKey(KeyCode.RightShift));
+            HandlePlatformUpdate(ray, Input.GetKeyDown(KeyCode.RightShift));
         }
         else
         {
             Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
-            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger));
+            HandlePlatformUpdate(ray, OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger));
         }
     }
 }

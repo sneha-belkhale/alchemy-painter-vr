@@ -38,7 +38,7 @@ public class SceneController : MonoBehaviour
             {
                 //just highlight 
                 lastHighlightedMat = hit.collider.gameObject.GetComponent<MeshRenderer>().material;
-                lastHighlightedMat.SetFloat("_OutlineIntensity", 1f);
+                lastHighlightedMat.SetFloat("_OutlineIntensity", 0.5f);
             }
         }
     }

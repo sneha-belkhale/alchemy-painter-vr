@@ -26,14 +26,14 @@ public class MeshPainterController : MonoBehaviour
     public Mesh lastHighlightedMesh;
     private bool wireframeOn;
 
+    public bool objectPaintMode;
+
     private string currentScenery;
     private float maxRaycastDist;
 
     private List<List<TrianglePaintState>> lastPaintedList; 
     private List<TrianglePaintState> lastTrianglePaintStates;
     public List<string> initializedSceneries;
-
-    public Material saveMat;
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +49,7 @@ public class MeshPainterController : MonoBehaviour
         initializedSceneries = new List<string>();
 
         wireframeOn = false;
+        objectPaintMode = false;
 
         maxRaycastDist = 10.1f;
     }
@@ -299,7 +300,7 @@ public class MeshPainterController : MonoBehaviour
         lastHighlightedMesh = mesh;
     }
 
-    void ColorTriangleWithSyringe(int tIdx, Mesh mesh)
+    void ColorTrianglesWithSyringe(int tStart, int tEnd, Mesh mesh)
     {
         Vector4 currentSyringeComponents = new Vector4(
         syringeMat.GetFloat("_ColorPercent"),
@@ -314,7 +315,7 @@ public class MeshPainterController : MonoBehaviour
 
 
         //save last triangle paint state if different 
-        if (currentSyringeComponents == mesh.tangents[mesh.triangles[tIdx * 3 + 0]] && mesh.uv2[mesh.triangles[tIdx * 3 + 0]] == curColorCompressed1)
+        if (currentSyringeComponents == mesh.tangents[mesh.triangles[tStart * 3 + 0]] && mesh.uv2[mesh.triangles[tStart * 3 + 0]] == curColorCompressed1)
         {
             return;
         }
@@ -324,30 +325,34 @@ public class MeshPainterController : MonoBehaviour
         Vector2[] uv2Array = mesh.uv2;
         Vector2[] uv3Array = mesh.uv3;
 
-        TrianglePaintState trianglePaintState;
-        trianglePaintState.tangent = tangentsArray[triangles[tIdx * 3 + 0]];
-        trianglePaintState.uv2 = uv2Array[triangles[tIdx * 3 + 0]];
-        trianglePaintState.uv3 = uv3Array[triangles[tIdx * 3 + 0]];
-        trianglePaintState.mesh = mesh;
-        trianglePaintState.index = tIdx;
-        lastTrianglePaintStates.Add(trianglePaintState);
+        for (int tIdx = tStart; tIdx < tEnd; tIdx++)
+        {
+            TrianglePaintState trianglePaintState;
+            trianglePaintState.tangent = tangentsArray[triangles[tIdx * 3 + 0]];
+            trianglePaintState.uv2 = uv2Array[triangles[tIdx * 3 + 0]];
+            trianglePaintState.uv3 = uv3Array[triangles[tIdx * 3 + 0]];
+            trianglePaintState.mesh = mesh;
+            trianglePaintState.index = tIdx;
+            lastTrianglePaintStates.Add(trianglePaintState);
 
-        tangentsArray[triangles[tIdx * 3 + 0]] = currentSyringeComponents;
-        tangentsArray[triangles[tIdx * 3 + 1]] = currentSyringeComponents;
-        tangentsArray[triangles[tIdx * 3 + 2]] = currentSyringeComponents;
+            tangentsArray[triangles[tIdx * 3 + 0]] = currentSyringeComponents;
+            tangentsArray[triangles[tIdx * 3 + 1]] = currentSyringeComponents;
+            tangentsArray[triangles[tIdx * 3 + 2]] = currentSyringeComponents;
 
-        uv2Array[triangles[tIdx * 3 + 0]] = curColorCompressed1;
-        uv2Array[triangles[tIdx * 3 + 1]] = curColorCompressed1;
-        uv2Array[triangles[tIdx * 3 + 2]] = curColorCompressed1;
+            uv2Array[triangles[tIdx * 3 + 0]] = curColorCompressed1;
+            uv2Array[triangles[tIdx * 3 + 1]] = curColorCompressed1;
+            uv2Array[triangles[tIdx * 3 + 2]] = curColorCompressed1;
 
-        uv3Array[triangles[tIdx * 3 + 0]] = curColorCompressed2;
-        uv3Array[triangles[tIdx * 3 + 1]] = curColorCompressed2;
-        uv3Array[triangles[tIdx * 3 + 2]] = curColorCompressed2;
+            uv3Array[triangles[tIdx * 3 + 0]] = curColorCompressed2;
+            uv3Array[triangles[tIdx * 3 + 1]] = curColorCompressed2;
+            uv3Array[triangles[tIdx * 3 + 2]] = curColorCompressed2;
+        }
 
         mesh.uv2 = uv2Array;
         mesh.uv3 = uv3Array;
         mesh.tangents = tangentsArray;
     }
+
     void HandlePlatformUpdate(Ray ray, bool colorEvent, bool colorEndEvent)
     {
         RaycastHit hit;
@@ -358,7 +363,14 @@ public class MeshPainterController : MonoBehaviour
             Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().mesh;
             if (colorEvent)
             {
-                ColorTriangleWithSyringe(hit.triangleIndex, mesh);
+                if (objectPaintMode)
+                {
+                    ColorTrianglesWithSyringe(0, mesh.triangles.Length/3, mesh);
+                }
+                else
+                {
+                    ColorTrianglesWithSyringe(hit.triangleIndex, hit.triangleIndex+1, mesh);
+                }
             }
             else
             {

@@ -11,11 +11,12 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
         LOD 200
+        Blend SrcAlpha OneMinusSrcAlpha 
 
     CGPROGRAM
-    #pragma surface surf Toon fullforwardshadows
+    #pragma surface surf Toon fullforwardshadows vertex:vert alpha:blend
 
     fixed4 _Color;
     float _OutlineIntensity;
@@ -27,19 +28,28 @@
     };
     
     sampler2D _MainTex;
+
+    void vert (inout appdata_full v, out Input o) {
+        UNITY_INITIALIZE_OUTPUT(Input,o);
+               
+        if(abs(v.vertex.x) > 4 && abs(v.vertex.z) > 4){
+            v.vertex.z -= sign(v.vertex.x) * sign(v.vertex.z) * (v.vertex.x - sign(v.vertex.x) * 4);
+        }         
+    }
     
     void surf (Input IN, inout SurfaceOutput o) {
         o.Albedo = _Color.rgb * tex2D (_MainTex, IN.uv_MainTex).rgb;
         float maxOutline = 1.0 - _OutlineWidth;
         if(IN.uv_MainTex.x < _OutlineWidth ||IN.uv_MainTex.x > maxOutline || IN.uv_MainTex.y < _OutlineWidth || IN.uv_MainTex.y > maxOutline){
-            o.Albedo = lerp(o.Albedo,_OutlineColor.rgb,_OutlineIntensity);
-        }
+            o.Albedo = lerp(o.Albedo,_OutlineColor.rgb, 0.5 + _OutlineIntensity);
+        } 
+        o.Alpha = 2 * distance(o.Albedo, float3(1,1,1));
     }
     
     half4 LightingToon (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {
         half4 c;
         c.rgb = s.Albedo;
-        c.a = 1.0;
+        c.a = s.Alpha;
         return c;
     }
     
