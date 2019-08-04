@@ -58,7 +58,6 @@ public class ColorWheelPicker : MonoBehaviour
             isHovering = true;
             Vector2 texCoord = hit.textureCoord;
             Color color = colorWheelTex.GetPixelBilinear(texCoord.x, texCoord.y);
-
             colorWheelMat.SetVector("_CursorPos", new Vector4(texCoord.x, texCoord.y));
 
             colorSourceTubeMat.SetColor("_Color", color);
@@ -85,6 +84,9 @@ public class ColorWheelPicker : MonoBehaviour
         {
             lastButtonSelected = hit.collider.gameObject.GetComponent<MeshRenderer>().material;
             lastButtonSelected.SetFloat("_Highlight", 0.5f);
+
+            Vector2 texCoord = hit.textureCoord;
+            lastButtonSelected.SetVector("_CursorPos", new Vector4(texCoord.x, texCoord.y));
 
             if (selectColorEvent)
             {

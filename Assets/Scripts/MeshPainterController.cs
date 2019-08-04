@@ -399,7 +399,7 @@ public class MeshPainterController : MonoBehaviour
             ToggleWireframe();
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) || OVRInput.GetDown(OVRInput.RawButton.Start))
         {
             ExitToMenu();
         }

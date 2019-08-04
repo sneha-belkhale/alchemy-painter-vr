@@ -9,6 +9,7 @@
         _OutlineIntensity ("Outline Intensity", Range(0,1)) = 0.05
         _OutlineColor ("Outline Color", Color) = (1, 1, 1, 1)
         _Highlight ("Highlight Amount", Range(0,3)) = 0
+        _CursorPos ("Cursor Position", Vector) = (0,0,0,0)
     }
     SubShader
     {
@@ -24,7 +25,8 @@
     fixed4 _OutlineColor;
     float _OutlineWidth;
     float _Highlight;
-    
+    float2 _CursorPos;
+
     struct Input {
         float2 uv_MainTex;
     };
@@ -47,6 +49,11 @@
         } 
         o.Alpha = 2 * distance(o.Albedo, float3(1,1,1));
         o.Albedo = lerp(o.Albedo, _Color, _Highlight);
+        
+        float dist = length(IN.uv_MainTex - _CursorPos);
+        if(dist < 0.14 && dist > 0.07 && _CursorPos.x > 0.001) {
+            o.Alpha = 0;
+        }
     }
     
     half4 LightingToon (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {
