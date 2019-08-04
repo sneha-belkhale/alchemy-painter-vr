@@ -8,6 +8,7 @@
         _OutlineWidth ("Outline Width", Range(0,0.1)) = 0.05
         _OutlineIntensity ("Outline Intensity", Range(0,1)) = 0.05
         _OutlineColor ("Outline Color", Color) = (1, 1, 1, 1)
+        _Highlight ("Highlight Amount", Range(0,3)) = 0
     }
     SubShader
     {
@@ -22,6 +23,7 @@
     float _OutlineIntensity;
     fixed4 _OutlineColor;
     float _OutlineWidth;
+    float _Highlight;
     
     struct Input {
         float2 uv_MainTex;
@@ -38,12 +40,13 @@
     }
     
     void surf (Input IN, inout SurfaceOutput o) {
-        o.Albedo = _Color.rgb * tex2D (_MainTex, IN.uv_MainTex).rgb;
+        o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;
         float maxOutline = 1.0 - _OutlineWidth;
         if(IN.uv_MainTex.x < _OutlineWidth ||IN.uv_MainTex.x > maxOutline || IN.uv_MainTex.y < _OutlineWidth || IN.uv_MainTex.y > maxOutline){
             o.Albedo = lerp(o.Albedo,_OutlineColor.rgb, 0.5 + _OutlineIntensity);
         } 
         o.Alpha = 2 * distance(o.Albedo, float3(1,1,1));
+        o.Albedo = lerp(o.Albedo, _Color, _Highlight);
     }
     
     half4 LightingToon (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {

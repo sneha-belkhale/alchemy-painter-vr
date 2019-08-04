@@ -24,6 +24,7 @@ public class ColorWheelPicker : MonoBehaviour
     private bool paintMode;
     public Texture2D trianglePaintTex;
     public Texture2D objectPaintTex;
+    private Material lastButtonSelected;
 
 
     // Start is called before the first frame update
@@ -41,10 +42,13 @@ public class ColorWheelPicker : MonoBehaviour
 
         meshPainterController = meshPainter.GetComponent<MeshPainterController>();
         paintMode = false;
+
+        lastButtonSelected = colorSourceTubeMat; // temp
     }
 
     void HandlePlatformUpdate(Ray ray, bool selectColorEvent)
     {
+        lastButtonSelected.SetFloat("_Highlight", 0);
         RaycastHit hit;
         int layerMask = 1 << 10;
 
@@ -77,18 +81,24 @@ public class ColorWheelPicker : MonoBehaviour
 
         // check paint mode button 
         layerMask = 1 << 13;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask) && selectColorEvent)
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
-            paintMode = !paintMode;
-            meshPainterController.objectPaintMode = paintMode;
+            lastButtonSelected = hit.collider.gameObject.GetComponent<MeshRenderer>().material;
+            lastButtonSelected.SetFloat("_Highlight", 0.5f);
 
-            if(paintMode)
+            if (selectColorEvent)
             {
-                hit.collider.gameObject.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", objectPaintTex);
-            }
-            else
-            {
-                hit.collider.gameObject.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", trianglePaintTex);
+                paintMode = !paintMode;
+                meshPainterController.objectPaintMode = paintMode;
+
+                if (paintMode)
+                {
+                    lastButtonSelected.SetTexture("_MainTex", objectPaintTex);
+                }
+                else
+                {
+                    lastButtonSelected.SetTexture("_MainTex", trianglePaintTex);
+                }
             }
         }
     }
