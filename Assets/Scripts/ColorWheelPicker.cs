@@ -21,7 +21,10 @@ public class ColorWheelPicker : MonoBehaviour
     private MeshPainterController meshPainterController;
     public GameObject meshPainter;
 
-    private bool paintMode; 
+    private bool paintMode;
+    public Texture2D trianglePaintTex;
+    public Texture2D objectPaintTex;
+
 
     // Start is called before the first frame update
     void Start()
@@ -78,6 +81,15 @@ public class ColorWheelPicker : MonoBehaviour
         {
             paintMode = !paintMode;
             meshPainterController.objectPaintMode = paintMode;
+
+            if(paintMode)
+            {
+                hit.collider.gameObject.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", objectPaintTex);
+            }
+            else
+            {
+                hit.collider.gameObject.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", trianglePaintTex);
+            }
         }
     }
 

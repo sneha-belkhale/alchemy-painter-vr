@@ -390,6 +390,30 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -42.018
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
 --- !u!1 &359471132
@@ -579,6 +603,16 @@ PrefabInstance:
       propertyPath: meshPainter
       value: 
       objectReference: {fileID: 1928616564}
+    - target: {fileID: 4104686882533927520, guid: 787dd78ec286a488789c3715d928ea43,
+        type: 3}
+      propertyPath: objectPaintTex
+      value: 
+      objectReference: {fileID: 2800000, guid: e26bdf03d89d34d03b6081476b664aff, type: 3}
+    - target: {fileID: 4104686882533927520, guid: 787dd78ec286a488789c3715d928ea43,
+        type: 3}
+      propertyPath: trianglePaintTex
+      value: 
+      objectReference: {fileID: 2800000, guid: 5ed434de406ac42bebedbf87c04884d3, type: 3}
     - target: {fileID: 4104686882533927519, guid: 787dd78ec286a488789c3715d928ea43,
         type: 3}
       propertyPath: m_LocalPosition.y
