@@ -35,9 +35,13 @@ public class MeshPainterController : MonoBehaviour
     private List<TrianglePaintState> lastTrianglePaintStates;
     public List<string> initializedSceneries;
 
+    public Material uvMaterial;
+
     // Start is called before the first frame update
     void Start()
     {
+        Physics.queriesHitBackfaces = true;
+
         rightController = GameObject.Find("RightControllerAnchor");
 
         syringeMat = syringe.GetComponent<Renderer>().material;
@@ -51,7 +55,7 @@ public class MeshPainterController : MonoBehaviour
         wireframeOn = false;
         objectPaintMode = false;
 
-        maxRaycastDist = 10.1f;
+        maxRaycastDist = 7.1f;
     }
 
     void ExitToMenu()
@@ -65,6 +69,7 @@ public class MeshPainterController : MonoBehaviour
         GameObject scenery = GameObject.Find(sceneryName).transform.GetChild(0).gameObject;
         for (int i = 0; i < scenery.transform.childCount; i++)
         {
+            GameObject g = scenery.transform.GetChild(i).gameObject;
             scenery.transform.GetChild(i).gameObject.SetActive(false);
         }
     }

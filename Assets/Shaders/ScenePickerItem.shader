@@ -51,7 +51,7 @@
         o.Albedo = lerp(o.Albedo, _Color, _Highlight);
         
         float dist = length(IN.uv_MainTex - _CursorPos);
-        if(dist < 0.14 && dist > 0.07 && _CursorPos.x > 0.001) {
+        if(dist < 0.056 && dist > 0.028 && _CursorPos.x > 0.001) {
             o.Alpha = 0;
         }
     }

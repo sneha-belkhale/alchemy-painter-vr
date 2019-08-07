@@ -49,6 +49,8 @@ public class ColorWheelPicker : MonoBehaviour
     void HandlePlatformUpdate(Ray ray, bool selectColorEvent)
     {
         lastButtonSelected.SetFloat("_Highlight", 0);
+        lastButtonSelected.SetVector("_CursorPos", new Vector4(0,0));
+
         RaycastHit hit;
         int layerMask = 1 << 10;
 
