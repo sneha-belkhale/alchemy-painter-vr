@@ -44,12 +44,12 @@
         float maxOutline = 1.0 - _OutlineWidth;
         if(IN.uv_MainTex.x < _OutlineWidth ||IN.uv_MainTex.x > maxOutline || IN.uv_MainTex.y < _OutlineWidth || IN.uv_MainTex.y > maxOutline){
             o.Albedo = lerp(o.Albedo,_OutlineColor.rgb,_OutlineIntensity);
-            
             float2 p = float2(cos(2*_Time.y) + 0.5, sin(2*_Time.y)+ 0.5);
             float dist = length(IN.uv_MainTex - p);
             o.Alpha = 0.3;
             if(dist < 0.6) {
                 o.Alpha += dist * max(sin(0.75*_Time.y)-0.3,0);
+                o.Albedo = lerp(o.Albedo,_OutlineColor.rgb,_OutlineIntensity);
             }
         }
     }

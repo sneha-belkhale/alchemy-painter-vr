@@ -15,7 +15,7 @@ public class ColorWheelPicker : MonoBehaviour
     public GameObject rainbowSourceTube;
     private Material rainbowSourceTubeMat;
 
-    private Color lastColorSelected;
+    public Color lastColorSelected;
     private bool isHovering;
 
     private MeshPainterController meshPainterController;
@@ -37,7 +37,9 @@ public class ColorWheelPicker : MonoBehaviour
         colorSourceTubeMat = colorSourceTube.GetComponent<Renderer>().material;
         rainbowSourceTubeMat = rainbowSourceTube.GetComponent<Renderer>().material;
 
-        lastColorSelected = colorSourceTubeMat.GetColor("_Color");
+        colorSourceTubeMat.SetColor("_Color", lastColorSelected);
+        rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
+
         isHovering = false;
 
         meshPainterController = meshPainter.GetComponent<MeshPainterController>();
