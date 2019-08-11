@@ -9,8 +9,6 @@ public class FluidFiller : MonoBehaviour
     private GameObject Applicator;
     private GameObject Liquid;
 
-    private GameObject rightController;
-
     public GameObject MeshPainter;
 
     public GameObject FluidToFill;
@@ -24,11 +22,12 @@ public class FluidFiller : MonoBehaviour
     private float maxFill;
     private float minFill;
 
+    private RaycastHit lastRaycastHit;
+    private bool raycasted;
+
     // Use this for initialization
     void Start()
     {
-        rightController = GameObject.Find("RightControllerAnchor");
-
         FluidMat = FluidToFill.GetComponent<Renderer>().material;
         FluidMatTemp = new Material(FluidMat);
         lastHighlightedMat = FluidMat;
@@ -73,17 +72,22 @@ public class FluidFiller : MonoBehaviour
         mat.SetFloat("_RainbowPercent", 0);
     }
 
-    void HandlePlatformUpdate(Ray ray, bool fillEvent, bool emptyEvent)
+    void onRaycastHit(RaycastHit hit)
     {
+        raycasted = true;
+        lastRaycastHit = hit;
+    }
 
-        int layerMask = 1 << 8 | 1 << 11;
-        RaycastHit hit;
+    void LateUpdate()
+    {
+        bool fillEvent = Input.GetKey(KeyCode.F) || OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp);
+        bool emptyEvent = Input.GetKey(KeyCode.G) || OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown);
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        if (raycasted)
         {
-            FluidMat = hit.collider.gameObject.GetComponent<Renderer>().material;
+            FluidMat = lastRaycastHit.collider.gameObject.GetComponent<Renderer>().material;
 
-            if (fillEvent && hit.collider.gameObject.layer != 11)
+            if (fillEvent && lastRaycastHit.collider.gameObject.layer != 11)
             {
                 FillTube(FluidMat);
             }
@@ -105,27 +109,10 @@ public class FluidFiller : MonoBehaviour
         {
             EmptySyringe();
         }
+
+        raycasted = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        RemoveHighlights();
-
-        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
-
-        // ************** Keyboard Controls ************** //
-        if (!isConnected)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            HandlePlatformUpdate(ray, Input.GetKey(KeyCode.F), Input.GetKey(KeyCode.G));
-        }
-        // ************** VR Controls ************** //
-        else {
-            Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
-            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp), OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown));
-        }
-    }
 
     void HighlightTube(Material mat)
     {

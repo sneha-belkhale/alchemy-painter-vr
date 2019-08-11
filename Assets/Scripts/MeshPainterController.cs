@@ -37,6 +37,9 @@ public class MeshPainterController : MonoBehaviour
 
     public Material uvMaterial;
 
+    private RaycastHit lastRaycastHit;
+    private bool raycasted;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -358,14 +361,20 @@ public class MeshPainterController : MonoBehaviour
         mesh.tangents = tangentsArray;
     }
 
-    void HandlePlatformUpdate(Ray ray, bool colorEvent, bool colorEndEvent)
+    void onRaycastHit(RaycastHit hit)
     {
-        RaycastHit hit;
-        int layerMask = 1 << 9;
+        raycasted = true;
+        lastRaycastHit = hit;
+    }
 
-        if (Physics.Raycast(ray, out hit, maxRaycastDist, layerMask))
+    void LateUpdate()
+    {
+        bool colorEvent = Input.GetKey(KeyCode.LeftShift) || OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger);
+        bool colorEndEvent = Input.GetKeyUp(KeyCode.LeftShift) || OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger);
+
+        if (raycasted)
         {
-            Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().mesh;
+            Mesh mesh = lastRaycastHit.collider.gameObject.GetComponent<MeshFilter>().mesh;
             if (colorEvent)
             {
                 if (objectPaintMode)
@@ -374,12 +383,12 @@ public class MeshPainterController : MonoBehaviour
                 }
                 else
                 {
-                    ColorTrianglesWithSyringe(hit.triangleIndex, hit.triangleIndex+1, mesh);
+                    ColorTrianglesWithSyringe(lastRaycastHit.triangleIndex, lastRaycastHit.triangleIndex+1, mesh);
                 }
             }
             else
             {
-                HighlightTriangle(hit.triangleIndex, mesh);
+                HighlightTriangle(lastRaycastHit.triangleIndex, mesh);
             }
         }
 
@@ -387,13 +396,13 @@ public class MeshPainterController : MonoBehaviour
         {
             UpdateLastPaintedState();
         }
+
+        raycasted = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
-
         if (Input.GetKeyDown(KeyCode.U) || OVRInput.GetDown(OVRInput.RawButton.B))
         {
             Undo();
@@ -411,18 +420,6 @@ public class MeshPainterController : MonoBehaviour
 
         RemoveLastHighlight();
 
-        // ************** Keyboard Controls ************** //
-        if (!isConnected)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            HandlePlatformUpdate(ray, Input.GetKey(KeyCode.LeftShift), Input.GetKeyUp(KeyCode.LeftShift));
-        }
-        // ************** VR Controls ************** //
-        else
-        {
-            Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
-            HandlePlatformUpdate(ray, OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger), OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger));
-        }
     }
 
     private void OnApplicationPause()

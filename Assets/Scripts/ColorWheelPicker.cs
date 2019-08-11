@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class ColorWheelPicker : MonoBehaviour
 {
-    private GameObject rightController;
-
     public Texture2D colorWheelTex;
     private Material colorWheelMat;
 
@@ -18,20 +16,13 @@ public class ColorWheelPicker : MonoBehaviour
     public Color lastColorSelected;
     private bool isHovering;
 
-    private MeshPainterController meshPainterController;
-    public GameObject meshPainter;
-
-    private bool paintMode;
-    public Texture2D trianglePaintTex;
-    public Texture2D objectPaintTex;
-    private Material lastButtonSelected;
+    private RaycastHit lastRaycastHit;
+    private bool raycasted;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        rightController = GameObject.Find("RightControllerAnchor");
-
         colorWheelMat = GetComponent<MeshRenderer>().material;
 
         colorSourceTubeMat = colorSourceTube.GetComponent<Renderer>().material;
@@ -41,33 +32,27 @@ public class ColorWheelPicker : MonoBehaviour
         rainbowSourceTubeMat.SetColor("_Color", lastColorSelected);
 
         isHovering = false;
-
-        meshPainterController = meshPainter.GetComponent<MeshPainterController>();
-        paintMode = false;
-
-        lastButtonSelected = colorSourceTubeMat; // temp
     }
 
-    void HandlePlatformUpdate(Ray ray, bool selectColorEvent)
+    void onRaycastHit( RaycastHit hit)
     {
-        lastButtonSelected.SetFloat("_Highlight", 0);
-        lastButtonSelected.SetVector("_CursorPos", new Vector4(0,0));
-
-        RaycastHit hit;
-        int layerMask = 1 << 10;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        raycasted = true;
+        lastRaycastHit = hit; 
+    }
+    private void LateUpdate()
+    {
+        if (raycasted)
         {
             //hit the color wheel 
             isHovering = true;
-            Vector2 texCoord = hit.textureCoord;
+            Vector2 texCoord = lastRaycastHit.textureCoord;
             Color color = colorWheelTex.GetPixelBilinear(texCoord.x, texCoord.y);
             colorWheelMat.SetVector("_CursorPos", new Vector4(texCoord.x, texCoord.y));
 
             colorSourceTubeMat.SetColor("_Color", color);
             rainbowSourceTubeMat.SetColor("_Color", color);
 
-            if (selectColorEvent)
+            if (Input.GetKeyDown(KeyCode.RightShift) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
             {
                 lastColorSelected = color;
             }
@@ -81,48 +66,6 @@ public class ColorWheelPicker : MonoBehaviour
 
             isHovering = false;
         }
-
-        // check paint mode button 
-        layerMask = 1 << 13;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-        {
-            lastButtonSelected = hit.collider.gameObject.GetComponent<MeshRenderer>().material;
-            lastButtonSelected.SetFloat("_Highlight", 0.5f);
-
-            Vector2 texCoord = hit.textureCoord;
-            lastButtonSelected.SetVector("_CursorPos", new Vector4(texCoord.x, texCoord.y));
-
-            if (selectColorEvent)
-            {
-                paintMode = !paintMode;
-                meshPainterController.objectPaintMode = paintMode;
-
-                if (paintMode)
-                {
-                    lastButtonSelected.SetTexture("_MainTex", objectPaintTex);
-                }
-                else
-                {
-                    lastButtonSelected.SetTexture("_MainTex", trianglePaintTex);
-                }
-            }
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        bool isConnected = OVRInput.IsControllerConnected(OVRInput.Controller.RTouch);
-
-        if (!isConnected)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            HandlePlatformUpdate(ray, Input.GetKeyDown(KeyCode.RightShift));
-        }
-        else
-        {
-            Ray ray = new Ray(rightController.transform.position, rightController.transform.forward);
-            HandlePlatformUpdate(ray, OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger));
-        }
+        raycasted = false; 
     }
 }
