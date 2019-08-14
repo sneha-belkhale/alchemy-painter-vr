@@ -42,7 +42,8 @@
     }
     
     void surf (Input IN, inout SurfaceOutput o) {
-        o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;
+        float4 col = tex2D (_MainTex, IN.uv_MainTex);
+        o.Albedo = col.rgb;
         float maxOutline = 1.0 - _OutlineWidth;
         if(IN.uv_MainTex.x < _OutlineWidth ||IN.uv_MainTex.x > maxOutline || IN.uv_MainTex.y < _OutlineWidth || IN.uv_MainTex.y > maxOutline){
             o.Albedo = lerp(o.Albedo,_OutlineColor.rgb, 0.5 + _OutlineIntensity);

@@ -25,6 +25,8 @@ public class FluidFiller : MonoBehaviour
     private RaycastHit lastRaycastHit;
     private bool raycasted;
 
+    private LineRenderer raycastLine;
+
     // Use this for initialization
     void Start()
     {
@@ -47,6 +49,7 @@ public class FluidFiller : MonoBehaviour
     {
         Liquid = Syringe.transform.Find("Liquid").gameObject;
         LiquidMat = Liquid.GetComponent<Renderer>().material;
+        raycastLine = GameObject.Find("RightControllerAnchor").GetComponent<LineRenderer>();
 
 
         Presser = Syringe.transform.Find("Presser").gameObject;
@@ -61,6 +64,7 @@ public class FluidFiller : MonoBehaviour
 
         ResetMaterialParams(LiquidMat);
         ResetMaterialParams(SyringePartsMat);
+        raycastLine.material.SetColor("_Color", new Color(1, 1, 1, 0.2f));
     }
 
     void ResetMaterialParams(Material mat) 
@@ -192,14 +196,25 @@ public class FluidFiller : MonoBehaviour
 
     void CopyWeightsToSyringeParts()
     {
+        float fillAmount = LiquidMat.GetFloat("_FillAmount");
+        Color color = LiquidMat.GetColor("_Color");
 
-        SyringePartsMat.SetColor("_Color", LiquidMat.GetColor("_Color"));
+        SyringePartsMat.SetColor("_Color", color);
 
-        SyringePartsMat.SetFloat("_FillAmount", LiquidMat.GetFloat("_FillAmount"));
+        SyringePartsMat.SetFloat("_FillAmount", fillAmount);
         SyringePartsMat.SetFloat("_GlitterPercent", LiquidMat.GetFloat("_GlitterPercent"));
         SyringePartsMat.SetFloat("_ColorPercent", LiquidMat.GetFloat("_ColorPercent"));
         SyringePartsMat.SetFloat("_PoisonPercent", LiquidMat.GetFloat("_PoisonPercent"));
         SyringePartsMat.SetFloat("_RainbowPercent", LiquidMat.GetFloat("_RainbowPercent"));
+
+        if(fillAmount <= minFill)
+        {
+            raycastLine.material.SetColor("_Color", new Color(1,1,1,0.2f));
+        }
+        else
+        {
+            raycastLine.material.SetColor("_Color", color);
+        }
     }
 
     void FillTube(Material tubeMat)

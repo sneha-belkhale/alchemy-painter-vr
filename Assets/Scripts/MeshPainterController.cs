@@ -20,7 +20,6 @@ public class MeshPainterController : MonoBehaviour
     public GameObject ScenePicker;
 
     private Material syringeMat;
-    private GameObject rightController;
 
     public Vector3Int lastHighlightedIndex;
     public Mesh lastHighlightedMesh;
@@ -44,8 +43,6 @@ public class MeshPainterController : MonoBehaviour
     void Start()
     {
         Physics.queriesHitBackfaces = true;
-
-        rightController = GameObject.Find("RightControllerAnchor");
 
         syringeMat = syringe.GetComponent<Renderer>().material;
 
