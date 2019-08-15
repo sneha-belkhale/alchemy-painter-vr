@@ -43,7 +43,7 @@ public class PaintModeButton : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.RightShift) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
                 {
                     paintMode = !paintMode;
-                meshPainterController.objectPaintMode = paintMode;
+                    meshPainterController.objectPaintMode = paintMode;
 
                 if (paintMode)
                 {

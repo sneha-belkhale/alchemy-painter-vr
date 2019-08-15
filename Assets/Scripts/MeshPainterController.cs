@@ -226,7 +226,7 @@ public class MeshPainterController : MonoBehaviour
         wireframeOn = !wireframeOn;
     }
 
-    void RemoveLastHighlight()
+    public void RemoveLastHighlight()
     {
         if (lastHighlightedIndex.x < 0) return;
         Vector2[] uv3Array = lastHighlightedMesh.uv3;
@@ -414,9 +414,6 @@ public class MeshPainterController : MonoBehaviour
         {
             ExitToMenu();
         }
-
-        RemoveLastHighlight();
-
     }
 
     private void OnApplicationPause()

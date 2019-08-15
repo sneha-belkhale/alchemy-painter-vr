@@ -86,7 +86,6 @@ public class FluidFiller : MonoBehaviour
     {
         bool fillEvent = Input.GetKey(KeyCode.F) || OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp);
         bool emptyEvent = Input.GetKey(KeyCode.G) || OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown);
-
         if (raycasted)
         {
             FluidMat = lastRaycastHit.collider.gameObject.GetComponent<Renderer>().material;
@@ -115,6 +114,8 @@ public class FluidFiller : MonoBehaviour
         }
 
         raycasted = false;
+
+        MeshPainterController.RemoveLastHighlight();
     }
 
 
