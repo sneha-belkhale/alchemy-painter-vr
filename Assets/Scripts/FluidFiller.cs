@@ -8,6 +8,7 @@ public class FluidFiller : MonoBehaviour
     private GameObject Presser;
     private GameObject Applicator;
     private GameObject Liquid;
+    public Color startingColor;
 
     public GameObject MeshPainter;
 
@@ -64,7 +65,16 @@ public class FluidFiller : MonoBehaviour
 
         ResetMaterialParams(LiquidMat);
         ResetMaterialParams(SyringePartsMat);
-        raycastLine.material.SetColor("_Color", new Color(1, 1, 1, 0.2f));
+
+        //set some default starting color
+        raycastLine.material.SetColor("_Color", startingColor);
+        SyringePartsMat.SetColor("_Color", startingColor);
+        LiquidMat.SetColor("_Color", startingColor);
+        LiquidMat.SetFloat("_ColorPercent", 1);
+        SyringePartsMat.SetFloat("_ColorPercent", 1);
+        LiquidMat.SetFloat("_FillAmount", 0f);
+        SyringePartsMat.SetFloat("_FillAmount", 0f);
+
     }
 
     void ResetMaterialParams(Material mat) 
@@ -115,7 +125,7 @@ public class FluidFiller : MonoBehaviour
 
         raycasted = false;
 
-        MeshPainterController.RemoveLastHighlight();
+        //MeshPainterController.RemoveLastHighlight();
     }
 
 

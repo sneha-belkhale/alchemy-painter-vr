@@ -36,19 +36,23 @@
     void vert (inout appdata_full v, out Input o) {
         UNITY_INITIALIZE_OUTPUT(Input,o);
                
-        if(abs(v.vertex.x) > 4 && abs(v.vertex.z) > 4){
+        if(abs(v.vertex.x) >= 4 && abs(v.vertex.z) >= 4){
             v.vertex.z -= sign(v.vertex.x) * sign(v.vertex.z) * (v.vertex.x - sign(v.vertex.x) * 4);
         }         
     }
     
     void surf (Input IN, inout SurfaceOutput o) {
         float4 col = tex2D (_MainTex, IN.uv_MainTex);
+
         o.Albedo = col.rgb;
         float maxOutline = 1.0 - _OutlineWidth;
         if(IN.uv_MainTex.x < _OutlineWidth ||IN.uv_MainTex.x > maxOutline || IN.uv_MainTex.y < _OutlineWidth || IN.uv_MainTex.y > maxOutline){
             o.Albedo = lerp(o.Albedo,_OutlineColor.rgb, 0.5 + _OutlineIntensity);
         } 
         o.Alpha = 2 * distance(o.Albedo, float3(1,1,1));
+        if(o.Alpha < 0.1){
+            discard;
+        }
         o.Albedo = lerp(o.Albedo, _Color, _Highlight);
         
         float dist = length(IN.uv_MainTex - _CursorPos);

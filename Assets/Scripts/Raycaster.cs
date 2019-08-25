@@ -76,7 +76,7 @@ public class Raycaster : MonoBehaviour
             distance = 5;
         }
 
-        lineRenderer.SetPosition(0, ray.origin + 0.0685f * ray.direction);
+        lineRenderer.SetPosition(0, ray.origin + 0.068f * ray.direction);
         lineRenderer.SetPosition(1, ray.origin + ray.direction * distance);
     }
 }

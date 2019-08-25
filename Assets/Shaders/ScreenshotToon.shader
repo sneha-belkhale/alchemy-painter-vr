@@ -14,14 +14,13 @@
     }
     SubShader
     {
-        //Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
+        Tags { "RenderType"="Opaque" }
         LOD 200
 
-    Blend SrcAlpha OneMinusSrcAlpha 
 
     CGPROGRAM
 
-    #pragma surface surf SimpleFresnel fullforwardshadows vertex:vert alpha:blend
+    #pragma surface surf SimpleFresnel fullforwardshadows vertex:vert 
         
         fixed4 _FresnelColor;
         float _FresnelPower;

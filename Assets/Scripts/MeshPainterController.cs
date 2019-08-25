@@ -22,12 +22,13 @@ public class MeshPainterController : MonoBehaviour
     private Material syringeMat;
 
     public Vector3Int lastHighlightedIndex;
+    public Vector2Int lastHighlightedBounds;
     public Mesh lastHighlightedMesh;
     private bool wireframeOn;
 
     public bool objectPaintMode;
 
-    private string currentScenery;
+    private string currentScenery = "";
     private float maxRaycastDist;
 
     private List<List<TrianglePaintState>> lastPaintedList; 
@@ -47,6 +48,7 @@ public class MeshPainterController : MonoBehaviour
         syringeMat = syringe.GetComponent<Renderer>().material;
 
         lastHighlightedIndex = new Vector3Int(-1, -1, -1);
+        lastHighlightedBounds = new Vector2Int(0, 0);
         lastTrianglePaintStates = new List<TrianglePaintState>();
 
         lastPaintedList = new List<List<TrianglePaintState>>();
@@ -61,7 +63,9 @@ public class MeshPainterController : MonoBehaviour
     void ExitToMenu()
     {
         DisableSceneryNamed(currentScenery);
+        currentScenery = "";
         ScenePicker.SetActive(true);
+        GameObject.Find("OVRCameraRig").GetComponent<VRMover>().ResetToInitialTransform();
     }
 
     public void DisableSceneryNamed(string sceneryName)
@@ -100,6 +104,7 @@ public class MeshPainterController : MonoBehaviour
         }
         InitPaintableObjects(paintableObjects);
         string sceneryObjPath = Application.persistentDataPath + "/saved" + sceneryName;
+        Debug.Log(sceneryObjPath);
         if (File.Exists(sceneryObjPath + "0.gd"))
         {
             SetPaintableObjects(paintableObjects, sceneryObjPath);
@@ -230,9 +235,14 @@ public class MeshPainterController : MonoBehaviour
     {
         if (lastHighlightedIndex.x < 0) return;
         Vector2[] uv3Array = lastHighlightedMesh.uv3;
-        uv3Array[lastHighlightedIndex.x].y = 0;
-        uv3Array[lastHighlightedIndex.y].y = 0;
-        uv3Array[lastHighlightedIndex.z].y = 0;
+        int[] triangles = lastHighlightedMesh.triangles;
+        for (int idx = lastHighlightedBounds.x; idx < lastHighlightedBounds.y; idx++)
+        {
+
+            uv3Array[triangles[idx * 3 + 0]].y = 0;
+            uv3Array[triangles[idx * 3 + 1]].y = 0;
+            uv3Array[triangles[idx * 3 + 2]].y = 0;
+        }
         lastHighlightedMesh.uv3 = uv3Array;
         lastHighlightedIndex.Set(-1, -1, -1);
     }
@@ -283,25 +293,27 @@ public class MeshPainterController : MonoBehaviour
         lastPaintedList.RemoveAt(lastPaintedList.Count - 1);
     }
 
-    void HighlightTriangle(int tIdx, Mesh mesh)
+    void HighlightTriangle(int tStart, int tEnd, Mesh mesh)
     {
-        if (tIdx * 3 == lastHighlightedIndex.x) return;
+        if (tStart * 3 == lastHighlightedIndex.x && mesh.GetInstanceID() == lastHighlightedMesh.GetInstanceID()) return;
 
-        int idx = tIdx;
+        RemoveLastHighlight();
 
-        //check if already highlighted 
         Vector2[] uv3Array = mesh.uv3;
         int[] triangles = mesh.triangles;
+        for (int idx = tStart; idx < tEnd; idx++)
+        {
 
-        uv3Array[triangles[idx * 3 + 0]].y = 1;
-        uv3Array[triangles[idx * 3 + 1]].y = 1;
-        uv3Array[triangles[idx * 3 + 2]].y = 1;
-
+            uv3Array[triangles[idx * 3 + 0]].y = 1;
+            uv3Array[triangles[idx * 3 + 1]].y = 1;
+            uv3Array[triangles[idx * 3 + 2]].y = 1;
+        }
         mesh.uv3 = uv3Array;
-        lastHighlightedIndex.x = triangles[idx * 3 + 0];
-        lastHighlightedIndex.y = triangles[idx * 3 + 1];
-        lastHighlightedIndex.z = triangles[idx * 3 + 2];
+        lastHighlightedIndex.x = triangles[tStart * 3 + 0];
+        lastHighlightedIndex.y = triangles[tStart * 3 + 1];
+        lastHighlightedIndex.z = triangles[tStart * 3 + 2];
 
+        lastHighlightedBounds = new Vector2Int(tStart, tEnd);
         lastHighlightedMesh = mesh;
     }
 
@@ -335,7 +347,7 @@ public class MeshPainterController : MonoBehaviour
             TrianglePaintState trianglePaintState;
             trianglePaintState.tangent = tangentsArray[triangles[tIdx * 3 + 0]];
             trianglePaintState.uv2 = uv2Array[triangles[tIdx * 3 + 0]];
-            trianglePaintState.uv3 = uv3Array[triangles[tIdx * 3 + 0]];
+            trianglePaintState.uv3 = new Vector2(uv3Array[triangles[tIdx * 3 + 0]].x, 0);
             trianglePaintState.mesh = mesh;
             trianglePaintState.index = tIdx;
             lastTrianglePaintStates.Add(trianglePaintState);
@@ -356,6 +368,33 @@ public class MeshPainterController : MonoBehaviour
         mesh.uv2 = uv2Array;
         mesh.uv3 = uv3Array;
         mesh.tangents = tangentsArray;
+    }
+
+    public void ResetActiveScene()
+    {
+        if(currentScenery == "")
+        {
+            return;
+        }
+        GameObject scenery = GameObject.Find(currentScenery);
+        MeshFilter[] meshFilters = scenery.GetComponentsInChildren<MeshFilter>();
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            Mesh mesh = meshFilters[i].mesh;
+            Vector4[] tangents = mesh.tangents;
+            Vector2[] uv2 = mesh.uv2;
+            Vector2[] uv3 = mesh.uv3;
+
+            for (int j = 0; j < mesh.tangents.Length; j++)
+            {
+                tangents[j].Set(0, 0, 0, 0);
+                uv2[j].Set(0, 0);
+                uv3[j].Set(0, 0);
+            }
+            mesh.tangents = tangents;
+            mesh.uv2 = uv2;
+            mesh.uv3 = uv3;
+        }
     }
 
     void onRaycastHit(RaycastHit hit)
@@ -385,8 +424,19 @@ public class MeshPainterController : MonoBehaviour
             }
             else
             {
-                HighlightTriangle(lastRaycastHit.triangleIndex, mesh);
+                if (objectPaintMode)
+                {
+                    HighlightTriangle(0, mesh.triangles.Length / 3, mesh);
+                }
+                else
+                {
+                    HighlightTriangle(lastRaycastHit.triangleIndex, lastRaycastHit.triangleIndex + 1, mesh);
+                }
             }
+        }
+        else
+        {
+            RemoveLastHighlight();
         }
 
         if (colorEndEvent)
@@ -400,12 +450,12 @@ public class MeshPainterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.U) || OVRInput.GetDown(OVRInput.RawButton.B))
+        if (Input.GetKeyDown(KeyCode.U) || OVRInput.GetDown(OVRInput.RawButton.A))
         {
             Undo();
         }
 
-        if (Input.GetKeyDown(KeyCode.I) || OVRInput.GetDown(OVRInput.RawButton.A))
+        if (Input.GetKeyDown(KeyCode.I) || OVRInput.GetDown(OVRInput.RawButton.B))
         {
             ToggleWireframe();
         }

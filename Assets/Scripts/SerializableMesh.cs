@@ -45,7 +45,7 @@ public class SerializableMesh {
             _uv2[i].y = uv2[i].y;
 
             _uv3[i].x = uv3[i].x;
-            _uv3[i].y = uv3[i].y;
+            _uv3[i].y = 0; // DO NOT SERIALIZE HIGHLIGHTING
         }
     }
         

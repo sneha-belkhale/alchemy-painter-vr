@@ -11,7 +11,7 @@
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
+        Tags { "RenderType"="Opaque" }
         LOD 200
         Blend SrcAlpha OneMinusSrcAlpha 
 
@@ -30,7 +30,7 @@
     void vert (inout appdata_full v, out Input o) {
         UNITY_INITIALIZE_OUTPUT(Input,o);
                
-        if(abs(v.vertex.x) > 4 && abs(v.vertex.z) > 4){
+        if(abs(v.vertex.x) >= 4 && abs(v.vertex.z) >= 4){
             v.vertex.z -= sign(v.vertex.x) * sign(v.vertex.z) * (v.vertex.x - sign(v.vertex.x) * 4);
         }         
     }
@@ -57,7 +57,7 @@
     half4 LightingToon (SurfaceOutput s, fixed3 viewDir, UnityGI gi) {
         half4 c;
         c.rgb = s.Albedo;
-        c.a = s.Alpha;
+        c.a = 1;
         return c;
     }
     

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TreeHillPickerItem
+  m_Name: GirlBoatPickerItem
   m_Shader: {fileID: 4800000, guid: f2891ea9b60894ed4960ec2190cbcad5, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: e9b65397067784ca589f3ad868b770ae, type: 3}
+        m_Texture: {fileID: 2800000, guid: a5b35cf97c93d4e028bb55fa2757ae91, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

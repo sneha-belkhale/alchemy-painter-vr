@@ -27,7 +27,7 @@ public class KeyboardMover : MonoBehaviour
             yaw += mouseSpeed * Time.deltaTime;
 
         //pitch -= mouseSpeed * Input.GetAxis("Mouse Y");
-        transform.localEulerAngles = new Vector3(0.0f, yaw, 0.0f);
+        //transform.localEulerAngles = new Vector3(0.0f, yaw, 0.0f);
 
         if (Input.GetKey(KeyCode.W))
             move(transform.forward);
