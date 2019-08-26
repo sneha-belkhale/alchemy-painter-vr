@@ -80,7 +80,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0, g: 0.91119623, b: 1, a: 1}
+    - _Color: {r: 0.38823533, g: 0.67294145, b: 0.8862745, a: 1}
     - _CursorPos: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}

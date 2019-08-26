@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class VRMover : MonoBehaviour
 {
-    public float speed = 1.3f;
+    public float speed = 2f;
     private float lastRotate;
     private float rotationTimeout = 0.3f;
     private Quaternion initalRot;

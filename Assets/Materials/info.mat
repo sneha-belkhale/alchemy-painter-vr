@@ -28,6 +28,6 @@ Material:
     - _OutlineIntensity: 0.05
     - _OutlineWidth: 0.05
     m_Colors:
-    - _Color: {r: 0, g: 0.91119623, b: 1, a: 1}
+    - _Color: {r: 0.38823533, g: 0.67294145, b: 0.8862745, a: 1}
     - _CursorPos: {r: 0, g: 0, b: 0, a: 0}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}

@@ -11,6 +11,7 @@ struct TrianglePaintState
     public Vector2 uv3;
     public Mesh mesh;
     public int index;
+    public bool objectPaintMode;
 }
 
 public class MeshPainterController : MonoBehaviour
@@ -39,6 +40,11 @@ public class MeshPainterController : MonoBehaviour
 
     private RaycastHit lastRaycastHit;
     private bool raycasted;
+
+    private Vector4[] tangentTemp;
+    private Vector2[] uv2Temp;
+    private Vector2[] uv3Temp;
+
 
     // Start is called before the first frame update
     void Start()
@@ -261,6 +267,58 @@ public class MeshPainterController : MonoBehaviour
         }
     }
 
+    void UndoWithoutCache()
+    {
+        lastTrianglePaintStates.ForEach((lastTrianglePaintState) => {
+            int[] triangles = lastTrianglePaintState.mesh.triangles;
+            tangentTemp = lastTrianglePaintState.mesh.tangents;
+            uv2Temp = lastTrianglePaintState.mesh.uv2;
+            uv3Temp = lastTrianglePaintState.mesh.uv3;
+            int tIdx = lastTrianglePaintState.index;
+            tangentTemp[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.tangent;
+            tangentTemp[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.tangent;
+            tangentTemp[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.tangent;
+
+            uv2Temp[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.uv2;
+            uv2Temp[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.uv2;
+            uv2Temp[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.uv2;
+
+            uv3Temp[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.uv3;
+            uv3Temp[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.uv3;
+            uv3Temp[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.uv3;
+            lastTrianglePaintState.mesh.uv2 = uv2Temp;
+            lastTrianglePaintState.mesh.uv3 = uv3Temp;
+            lastTrianglePaintState.mesh.tangents = tangentTemp;
+        });
+    }
+
+    void UndoWithCache()
+    {
+        int[] triangles = lastTrianglePaintStates[0].mesh.triangles;
+        tangentTemp = lastTrianglePaintStates[0].mesh.tangents;
+        uv2Temp = lastTrianglePaintStates[0].mesh.uv2;
+        uv3Temp = lastTrianglePaintStates[0].mesh.uv3;
+        
+        lastTrianglePaintStates.ForEach((lastTrianglePaintState) => {
+            int tIdx = lastTrianglePaintState.index;
+            tangentTemp[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.tangent;
+            tangentTemp[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.tangent;
+            tangentTemp[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.tangent;
+
+            uv2Temp[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.uv2;
+            uv2Temp[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.uv2;
+            uv2Temp[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.uv2;
+
+            uv3Temp[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.uv3;
+            uv3Temp[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.uv3;
+            uv3Temp[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.uv3;
+        });
+
+        lastTrianglePaintStates[0].mesh.uv2 = uv2Temp;
+        lastTrianglePaintStates[0].mesh.uv3 = uv3Temp;
+        lastTrianglePaintStates[0].mesh.tangents = tangentTemp;
+    }
+
     void Undo()
     {
         if(lastPaintedList.Count == 0)
@@ -269,28 +327,18 @@ public class MeshPainterController : MonoBehaviour
         }
         lastTrianglePaintStates = lastPaintedList[lastPaintedList.Count - 1];
 
-        lastTrianglePaintStates.ForEach((lastTrianglePaintState) => {
-            int[] triangles = lastTrianglePaintState.mesh.triangles;
-            Vector4[] tangentsArray = lastTrianglePaintState.mesh.tangents;
-            Vector2[] uv2Array = lastTrianglePaintState.mesh.uv2;
-            Vector2[] uv3Array = lastTrianglePaintState.mesh.uv3;
-            int tIdx = lastTrianglePaintState.index;
-            tangentsArray[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.tangent;
-            tangentsArray[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.tangent;
-            tangentsArray[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.tangent;
+        if (lastTrianglePaintStates[0].objectPaintMode)
+        {
+            //cache arrays; 
+            UndoWithCache();
+        }
+        else
+        {
+            UndoWithoutCache();
+        }
 
-            uv2Array[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.uv2;
-            uv2Array[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.uv2;
-            uv2Array[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.uv2;
-
-            uv3Array[triangles[tIdx * 3 + 0]] = lastTrianglePaintState.uv3;
-            uv3Array[triangles[tIdx * 3 + 1]] = lastTrianglePaintState.uv3;
-            uv3Array[triangles[tIdx * 3 + 2]] = lastTrianglePaintState.uv3;
-            lastTrianglePaintState.mesh.uv2 = uv2Array;
-            lastTrianglePaintState.mesh.uv3 = uv3Array;
-            lastTrianglePaintState.mesh.tangents = tangentsArray;
-        });
         lastPaintedList.RemoveAt(lastPaintedList.Count - 1);
+        lastTrianglePaintStates = new List<TrianglePaintState>(); //refresh
     }
 
     void HighlightTriangle(int tStart, int tEnd, Mesh mesh)
@@ -299,16 +347,16 @@ public class MeshPainterController : MonoBehaviour
 
         RemoveLastHighlight();
 
-        Vector2[] uv3Array = mesh.uv3;
+        uv3Temp = mesh.uv3;
         int[] triangles = mesh.triangles;
         for (int idx = tStart; idx < tEnd; idx++)
         {
 
-            uv3Array[triangles[idx * 3 + 0]].y = 1;
-            uv3Array[triangles[idx * 3 + 1]].y = 1;
-            uv3Array[triangles[idx * 3 + 2]].y = 1;
+            uv3Temp[triangles[idx * 3 + 0]].y = 1;
+            uv3Temp[triangles[idx * 3 + 1]].y = 1;
+            uv3Temp[triangles[idx * 3 + 2]].y = 1;
         }
-        mesh.uv3 = uv3Array;
+        mesh.uv3 = uv3Temp;
         lastHighlightedIndex.x = triangles[tStart * 3 + 0];
         lastHighlightedIndex.y = triangles[tStart * 3 + 1];
         lastHighlightedIndex.z = triangles[tStart * 3 + 2];
@@ -338,36 +386,37 @@ public class MeshPainterController : MonoBehaviour
         }
 
         int[] triangles = mesh.triangles;
-        Vector4[] tangentsArray = mesh.tangents;
-        Vector2[] uv2Array = mesh.uv2;
-        Vector2[] uv3Array = mesh.uv3;
+        tangentTemp = mesh.tangents;
+        uv2Temp = mesh.uv2;
+        uv3Temp = mesh.uv3;
 
         for (int tIdx = tStart; tIdx < tEnd; tIdx++)
         {
             TrianglePaintState trianglePaintState;
-            trianglePaintState.tangent = tangentsArray[triangles[tIdx * 3 + 0]];
-            trianglePaintState.uv2 = uv2Array[triangles[tIdx * 3 + 0]];
-            trianglePaintState.uv3 = new Vector2(uv3Array[triangles[tIdx * 3 + 0]].x, 0);
+            trianglePaintState.tangent = tangentTemp[triangles[tIdx * 3 + 0]];
+            trianglePaintState.uv2 = uv2Temp[triangles[tIdx * 3 + 0]];
+            trianglePaintState.uv3 = new Vector2(uv3Temp[triangles[tIdx * 3 + 0]].x, 0);
             trianglePaintState.mesh = mesh;
             trianglePaintState.index = tIdx;
+            trianglePaintState.objectPaintMode = objectPaintMode;
             lastTrianglePaintStates.Add(trianglePaintState);
 
-            tangentsArray[triangles[tIdx * 3 + 0]] = currentSyringeComponents;
-            tangentsArray[triangles[tIdx * 3 + 1]] = currentSyringeComponents;
-            tangentsArray[triangles[tIdx * 3 + 2]] = currentSyringeComponents;
+            tangentTemp[triangles[tIdx * 3 + 0]] = currentSyringeComponents;
+            tangentTemp[triangles[tIdx * 3 + 1]] = currentSyringeComponents;
+            tangentTemp[triangles[tIdx * 3 + 2]] = currentSyringeComponents;
 
-            uv2Array[triangles[tIdx * 3 + 0]] = curColorCompressed1;
-            uv2Array[triangles[tIdx * 3 + 1]] = curColorCompressed1;
-            uv2Array[triangles[tIdx * 3 + 2]] = curColorCompressed1;
+            uv2Temp[triangles[tIdx * 3 + 0]] = curColorCompressed1;
+            uv2Temp[triangles[tIdx * 3 + 1]] = curColorCompressed1;
+            uv2Temp[triangles[tIdx * 3 + 2]] = curColorCompressed1;
 
-            uv3Array[triangles[tIdx * 3 + 0]] = curColorCompressed2;
-            uv3Array[triangles[tIdx * 3 + 1]] = curColorCompressed2;
-            uv3Array[triangles[tIdx * 3 + 2]] = curColorCompressed2;
+            uv3Temp[triangles[tIdx * 3 + 0]] = curColorCompressed2;
+            uv3Temp[triangles[tIdx * 3 + 1]] = curColorCompressed2;
+            uv3Temp[triangles[tIdx * 3 + 2]] = curColorCompressed2;
         }
 
-        mesh.uv2 = uv2Array;
-        mesh.uv3 = uv3Array;
-        mesh.tangents = tangentsArray;
+        mesh.uv2 = uv2Temp;
+        mesh.uv3 = uv3Temp;
+        mesh.tangents = tangentTemp;
     }
 
     public void ResetActiveScene()
@@ -381,19 +430,19 @@ public class MeshPainterController : MonoBehaviour
         for (int i = 0; i < meshFilters.Length; i++)
         {
             Mesh mesh = meshFilters[i].mesh;
-            Vector4[] tangents = mesh.tangents;
-            Vector2[] uv2 = mesh.uv2;
-            Vector2[] uv3 = mesh.uv3;
-
-            for (int j = 0; j < mesh.tangents.Length; j++)
+            tangentTemp = mesh.tangents;
+            uv2Temp = mesh.uv2;
+            uv3Temp = mesh.uv3;
+            int l = mesh.tangents.Length;
+            for (int j = 0; j < l; j++)
             {
-                tangents[j].Set(0, 0, 0, 0);
-                uv2[j].Set(0, 0);
-                uv3[j].Set(0, 0);
+                tangentTemp[j].Set(0, 0, 0, 0);
+                uv2Temp[j].Set(0, 0);
+                uv3Temp[j].Set(0, 0);
             }
-            mesh.tangents = tangents;
-            mesh.uv2 = uv2;
-            mesh.uv3 = uv3;
+            mesh.tangents = tangentTemp;
+            mesh.uv2 = uv2Temp;
+            mesh.uv3 = uv3Temp;
         }
     }
 
@@ -439,7 +488,7 @@ public class MeshPainterController : MonoBehaviour
             RemoveLastHighlight();
         }
 
-        if (colorEndEvent)
+        if (colorEndEvent || objectPaintMode)
         {
             UpdateLastPaintedState();
         }
@@ -514,30 +563,31 @@ public class MeshPainterController : MonoBehaviour
     private void CopyMeshFromSerializedMesh(Mesh targetMesh, SerializableMesh sMesh)
     {
         int[] triangles = targetMesh.triangles;
-        Vector4[] newTangents = targetMesh.tangents;
-        Vector2[] newUv2s = targetMesh.uv2;
-        Vector2[] newUv3s = targetMesh.uv3;
+        tangentTemp = targetMesh.tangents;
+        uv2Temp = targetMesh.uv2;
+        uv3Temp = targetMesh.uv3;
+        int l = tangentTemp.Length;
 
-        for (int i = 0; i < newTangents.Length; i++)
+        for (int i = 0; i < l; i++)
         {
-            newTangents[i] = new Vector4(
+            tangentTemp[i].Set(
             sMesh._tangents[i].x,
             sMesh._tangents[i].y,
             sMesh._tangents[i].z,
             sMesh._tangents[i].w);
 
-            newUv2s[i] = new Vector2(
+            uv2Temp[i].Set(
             sMesh._uv2[i].x,
             sMesh._uv2[i].y
             );
 
-            newUv3s[i] = new Vector2(
+            uv3Temp[i].Set(
             sMesh._uv3[i].x,
             sMesh._uv3[i].y
             );
         }
-        targetMesh.tangents = newTangents;
-        targetMesh.uv2 = newUv2s;
-        targetMesh.uv3 = newUv3s;
+        targetMesh.tangents = tangentTemp;
+        targetMesh.uv2 = uv2Temp;
+        targetMesh.uv3 = uv3Temp;
     }
 }
