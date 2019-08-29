@@ -65,7 +65,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FillAmount: 0
+    - _FillAmount: -0.13399357
     - _FresnelPower: 0
     - _GlitterPercent: 0
     - _GlossMapScale: 1
@@ -87,7 +87,7 @@ Material:
     - _octaves: 4
     m_Colors:
     - _AmbientLightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 0.5330188, b: 0.6557899, a: 1}
+    - _Color: {r: 0.17924488, g: 0.17924488, b: 0.17924488, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FillColor: {r: 1, g: 1, b: 1, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}

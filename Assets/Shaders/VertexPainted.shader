@@ -135,7 +135,7 @@
             }
             // highlighting 
             if(IN.uv3_MainTex3.y > 0) {
-                o.Albedo = _HighlightColor;
+                o.Albedo = 0.9*o.Albedo;
             }
             
             // wireframe 

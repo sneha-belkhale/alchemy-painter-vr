@@ -164,14 +164,14 @@ public class MeshPainterController : MonoBehaviour
             //barycentric coords 
             if (i%3 == 0)
             {
-                newUv4s[i] = new Vector2(0, 1);
+                newUv4s[i].Set(0, 1);
             } else if (i % 3 == 1)
             {
-                newUv4s[i] = new Vector2(0, 0);
+                newUv4s[i].Set(0, 0);
             }
             else
             {
-                newUv4s[i] = new Vector2(1, 0);
+                newUv4s[i].Set(1, 0);
             }
         }
         targetMesh.vertices = newVerts;
