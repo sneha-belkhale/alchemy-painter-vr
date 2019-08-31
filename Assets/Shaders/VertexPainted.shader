@@ -99,7 +99,7 @@
             //float3 color = float3(r,g,b);
             
             float3 color = float3(IN.uv2_MainTex2.x,IN.uv2_MainTex2.y,IN.uv3_MainTex3.x);
-
+            
             uv2.y += _Time.y / 14.0;
             uv2.x += (sin(_Time.y/10.0)/9.0);
             float result = 0.0;
@@ -109,8 +109,7 @@
                 
             //Glitter Effect 
             float4 glitterColor = 15*result*float4(1,1,1,1);
-            float4 glitterAlpha = (1-_GlitterPercent)*1 +_GlitterPercent * (result + 0.01);
-            
+                        
             //Rainbow Effect 
             float2 uvr = float2(2.0*_UvScale*IN.uv_MainTex.xy-1.0);
             float3 rainbowColor = color;
@@ -123,8 +122,8 @@
             
             float f = fbm(uvm+fbm(5*uvm + 0.2*_Time.y, _octaves), _octaves);
             
-            float colorTotal = _RainbowPercent + _ColorPercent + 0.0001;
-
+            float colorTotal = _RainbowPercent + _ColorPercent + 0.01f;
+            
             o.Albedo = (_ColorPercent/colorTotal) * color + _GlitterPercent * glitterColor + _RainbowPercent * _RainbowPercent * rainbowColor / (colorTotal * colorTotal);
             o.Albedo = hardLight(0.5 + _PoisonPercent * (2*f - 0.5), o.Albedo);
             o.Alpha = 1;

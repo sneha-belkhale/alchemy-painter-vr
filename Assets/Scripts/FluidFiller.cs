@@ -154,7 +154,6 @@ public class FluidFiller : MonoBehaviour
         {
             sFillAmount -= Time.deltaTime;
             LiquidMat.SetFloat("_FillAmount", sFillAmount);
-
             CopyWeightsToSyringeParts();
             SetPresserPos(sFillAmount);
         }
@@ -221,6 +220,7 @@ public class FluidFiller : MonoBehaviour
         if(fillAmount <= minFill)
         {
             raycastLine.material.SetColor("_Color", new Color(1,1,1,0.2f));
+            LiquidMat.SetColor("_Color", Color.black);
         }
         else
         {
@@ -236,7 +236,7 @@ public class FluidFiller : MonoBehaviour
         Color sColor = LiquidMat.GetColor("_Color");
         Color color = tubeMat.GetColor("_Color");
 
-        if (sFillAmount > minFill && fillAmount < scaleMaxFill)
+        if (sFillAmount >= minFill && fillAmount <= scaleMaxFill)
         {
             float blend = (fillAmount - minFill) / (Mathf.Abs(minFill) + maxFill);
             float blendP = blend / (blend + Time.deltaTime);
